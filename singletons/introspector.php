@@ -293,6 +293,22 @@ class JSON_API_Introspector {
       $query['post_status'] = $json_api->query->post_status;
     }
 
+    if ($json_api->query->category_id) {
+	  $query['cat'] = $json_api->query->category_id;
+    }
+
+    if ($json_api->query->category_slug) {
+	  $query['category_name'] = $json_api->query->category_slug;
+    }
+
+    if ($json_api->query->tag_id) {
+	  $query['tag_id'] = $json_api->query->tag_id;
+    }
+
+    if ($json_api->query->tag_slug) {
+	  $query['tag'] = $json_api->query->tag_slug;
+    }
+
     if (!empty($query)) {
       query_posts($query);
     }
