@@ -289,6 +289,10 @@ class JSON_API_Introspector {
       $query['post_type'] = $json_api->query->post_type;
     }
     
+    if ($json_api->query->post_status) {
+      $query['post_status'] = $json_api->query->post_status;
+    }
+
     if (!empty($query)) {
       query_posts($query);
     }
