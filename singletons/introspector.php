@@ -232,7 +232,8 @@ class JSON_API_Introspector {
       'post_type' => $post->type,
       'post_parent' => $post->id,
       'order' => 'ASC',
-      'orderby' => 'menu_order'
+      'orderby' => 'menu_order',
+      'numberposts' => -1
     ));
     foreach ($wp_children as $wp_post) {
       $post->children[] = new JSON_API_Post($wp_post);
