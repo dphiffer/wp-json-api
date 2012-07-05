@@ -57,7 +57,8 @@ class JSON_API_Query {
       'author_slug' =>    'author_name',
       'search' =>         's',
       'order' =>          'order',
-      'order_by' =>       'orderby'
+      'order_by' =>       'orderby',
+      'post_status' =>    'post_status'
     );
     if ($key == 'date') {
       $date = null;
