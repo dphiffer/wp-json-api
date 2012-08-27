@@ -78,6 +78,10 @@ class JSON_API_Post {
       $wp_values['post_author'] = $author->id;
     }
     
+    if (!empty($values['date'])) {
+      $wp_values['post_date'] = $values['date'];
+    }
+
     if (isset($values['categories'])) {
       $categories = explode(',', $values['categories']);
       foreach ($categories as $category_slug) {
