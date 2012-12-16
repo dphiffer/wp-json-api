@@ -123,6 +123,7 @@ The standard response format for JSON API is (as you may have guessed) [JSON](ht
 
 Here is an example response from `http://localhost/wordpress/?json=1` called on a default WordPress installation (formatted for readability):
 
+```javascript
     {
       "status": "ok",
       "count": 1,
@@ -167,6 +168,7 @@ Here is an example response from `http://localhost/wordpress/?json=1` called on 
         }
       ]
     }
+```
 
 ### 2. Request methods
 
@@ -190,7 +192,7 @@ Returns information about JSON API.
 * `controller` - returns detailed information about a specific controller
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "json_api_version": "1.0",
@@ -198,10 +200,10 @@ Returns information about JSON API.
         "core"
       ]
     }
-
+```
   
 #### Response
-
+```javascript
     {
       "status": "ok",
       "name": "Core",
@@ -210,7 +212,7 @@ Returns information about JSON API.
         ...
       ]
     }
-    
+```
 
 ### Method: get_recent_posts
 
@@ -223,7 +225,7 @@ Returns an array of recent posts. You can invoke this from the WordPress home pa
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -235,7 +237,7 @@ Returns an array of recent posts. You can invoke this from the WordPress home pa
         ...
       ]
     }
-
+```
 
 ### Method: get_post
 
@@ -252,12 +254,12 @@ Returns a single post object.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "post": { ... }
     }
-
+```
 
 ### Method: get_page
 
@@ -275,12 +277,12 @@ Returns a single page object.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "page": { ... }
     }
-
+```
 ### Method: get_date_posts
 
 Returns an array of posts/pages in a specific date archive (by day, month, or year).
@@ -297,7 +299,7 @@ Returns an array of posts/pages in a specific date archive (by day, month, or ye
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -309,7 +311,7 @@ Returns an array of posts/pages in a specific date archive (by day, month, or ye
         ...
       ]
     }
-
+```
 ### Method: get_category_posts
 
 Returns an array of posts/pages in a specific category.
@@ -327,7 +329,7 @@ Returns an array of posts/pages in a specific category.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -340,7 +342,7 @@ Returns an array of posts/pages in a specific category.
         ...
       ]
     }
-
+```
 
 ### Method: get_tag_posts
 
@@ -359,7 +361,7 @@ Returns an array of posts/pages with a specific tag.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -372,7 +374,7 @@ Returns an array of posts/pages with a specific tag.
         ...
       ]
     }
-
+```
 
 ### Method: get_author_posts
 
@@ -391,7 +393,7 @@ Returns an array of posts/pages written by a specific author.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -404,7 +406,7 @@ Returns an array of posts/pages written by a specific author.
         ...
       ]
     }
-
+```
 
 ### Method: get_search_results
 
@@ -422,7 +424,7 @@ Returns an array of posts/pages in response to a search query.
 * `post_type` - used to retrieve custom post types
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 10,
@@ -434,14 +436,14 @@ Returns an array of posts/pages in response to a search query.
         ...
       ]
     }
-
+```
 
 ### Method: get_date_index
 
 Returns both an array of date page permalinks and a tree structure representation of the archive.
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "permalinks": [
@@ -456,7 +458,7 @@ Returns both an array of date page permalinks and a tree structure representatio
           "11": 7
         }
       }
-
+```
 Note: the tree is arranged by `response.tree.[year].[month].[number of posts]`.
 
 
@@ -465,7 +467,7 @@ Note: the tree is arranged by `response.tree.[year].[month].[number of posts]`.
 Returns an array of active categories.
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 3,
@@ -475,14 +477,14 @@ Returns an array of active categories.
         { ... }
       ]
     }
-
+```
 
 ### Method: get_tag_index
 
 Returns an array of active tags.
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 3
@@ -492,14 +494,14 @@ Returns an array of active tags.
         { ... }
       ]
     }
-
+```
 
 ### Method: get_author_index
 
 Returns an array of active blog authors.
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "count": 3,
@@ -509,14 +511,14 @@ Returns an array of active blog authors.
         { ... }
       ]
     }
-
+```
 
 ### Method: get_page_index
 
 Returns a hierarchical tree of `page` posts.
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "pages": [
@@ -525,7 +527,7 @@ Returns a hierarchical tree of `page` posts.
         { ... }
       ]
     }
-
+```
 ### Method: get_nonce
 
 Returns a WordPress nonce value, required to call some data manipulation methods.
@@ -536,14 +538,14 @@ Returns a WordPress nonce value, required to call some data manipulation methods
 * `method` - the method you wish to call (currently `create_post` is the only method that requires a nonce)
 
 #### Response
-
+```javascript
     {
       "status": "ok",
       "controller": "posts",
       "method": "create_post",
       "nonce": "cefe01efd4"
     }
-
+```
 __Further reading__  
 To learn more about how nonces are used in WordPress, see [Mark Jaquith's article on the subject](http://markjaquith.wordpress.com/2006/06/02/wordpress-203-nonces/).
 
@@ -757,7 +759,7 @@ JSON API exposes several [action and filter hooks](http://codex.wordpress.org/Pl
 This filter controls the array of controllers available to JSON API. The callback function is passed a single argument, an array of strings.
 
 #### Example
-    
+```php
     // Add a custom controller
     add_filter('json_api_controllers', 'add_my_controller');
     
@@ -766,7 +768,7 @@ This filter controls the array of controllers available to JSON API. The callbac
       $controllers[] 'MyController';
       return $controllers;
     }
-
+```
 
 ### Filter: json_api_[controller]_controller_path
 
@@ -776,13 +778,14 @@ __Note__
 If you your controller file in the `json-api/controllers` folder JSON API will find it automatically.
 
 #### Example
-
+```php
     // Register the source file for JSON_API_Widgets_Controller
     add_filter('json_api_widgets_controller_path', 'widgets_controller_path');
     
     function widgets_controller_path($default_path) {
       return '/path/to/widgets.php';
     }
+```
 
 __Capitalization__  
 Your filter hook must be all-lowercase to work correctly. The above example would fail with the filter `json_api_Widgets_Controller_path`, even if that's how the class is capitalized in the PHP source.
@@ -792,7 +795,7 @@ Your filter hook must be all-lowercase to work correctly. The above example woul
 This is called just before the output is encoded into JSON format. The value passed will always be an associative array, according to the format described in each method's documentation. Those items described in the *Response objects* section are passed as PHP objects, not associative arrays.
 
 #### Example
-
+```php
     add_filter('json_api_encode', 'my_encode_kittens');
     
     function my_encode_kittens($response) {
@@ -809,13 +812,14 @@ This is called just before the output is encoded into JSON format. The value pas
     function my_add_kittens(&$post) {
       $post->kittens 'Kittens!';
     }
+```
 
 ### Action: json_api-[controller]-[method]
 
 Each JSON API method invokes an action when called.
 
 #### Example
-    
+```php
     // Disable get_author_index method (e.g., for security reasons)
     add_action('json_api-core-get_author_index', 'my_disable_author_index');
     
@@ -823,13 +827,14 @@ Each JSON API method invokes an action when called.
       // Stop execution
       exit;
     }
+```
 
 ### 5.2. Developing JSON API controllers
 
 #### Creating a controller
 
 To start a new JSON API controller, create a file called `hello.php` inside `wp-content/plugins/json-api/controllers`. Add the following class definition:
-
+```php
     <?php
     
     class JSON_API_Hello_Controller {
@@ -843,20 +848,21 @@ To start a new JSON API controller, create a file called `hello.php` inside `wp-
     }
     
     ?>
-    
+```
 Your controller is now available as `hello`, and exposes one `hello_world` method.
     
 Next, activate your controller from the WordPress admin interface, available from the menu under Settings > JSON API. You can either click on the link to your `hello_world` method from the admin interface or enter it manually. It should have the form: `http://www.example.org/api/hello/hello_world/?dev=1` or `http://www.example.org/?json=hello.hello_world&dev=1` (note the use of the `dev` argument to enable human-readable output). You should get the following output:
-
+```javascript
     {
       "status": "ok",
       "message": "Hello, world"
     }
+```
 
 #### Using query vars
 
 To customize the behavior of your controller, you will want to make use of the global `$json_api->query` object. Add the following method to your controller:
-
+```php
     public function hello_person() {
       global $json_api;
       $name $json_api->query->name;
@@ -864,20 +870,21 @@ To customize the behavior of your controller, you will want to make use of the g
         "message"> "Hello, $name."
       );
     }
-
+```
 Now append the `name` query var to the method call: `http://www.example.org/api/hello/hello_world/?dev=1&name=Alice` or `http://www.example.org/?json=hello.hello_world&dev=1&name=Alice`.
-
+```javascript
     {
       "status": "ok",
       "message": "Hello, Alice"
     }
+```
 
 #### Introspector and data models
 
 Your controller can use any of the [existing WordPress functions](http://codex.wordpress.org/Function_Reference) to collect data, but JSON API also includes an introspector that wraps data in objects defined in the `json-api/models` directory. These are the same data models described in *Section 4: Response objects*.
 
 Here is an example of how you might use the introspector:
-
+```php
     // Retrieve posts based on custom field key/value pair
     public function get_custom_posts() {
       global $json_api;
@@ -899,11 +906,12 @@ Here is an example of how you might use the introspector:
         'posts'> $posts
       );
     }
+```
 
 #### External controllers
 
 It is recommended that custom controllers are kept outside of `json-api/controllers` in order to avoid accidental deletion during upgrades or site migrations. To make your controller visible from an external plugin or theme directory you will need to use two filters: `json_api_controllers` and `json_api_[controller]_controller_path`. Move the `hello.php` file from the steps above into your theme's directory. Then add the following to your theme's `functions.php` file (if your theme doesn't have a file called `functions.php` you can create one).
-
+```php
     function add_hello_controller($controllers) {
       $controllers[] 'hello';
       return $controllers;
@@ -914,6 +922,7 @@ It is recommended that custom controllers are kept outside of `json-api/controll
       return "/path/to/theme/hello.php";
     }
     add_filter('json_api_hello_controller_path', 'set_hello_controller_path');
+```
 
 ### 5.3. Configuration options
 
