@@ -112,6 +112,13 @@ class JSON_API_Post {
     } else {
       $this->id = wp_insert_post($wp_values);
     }
+
+	if (isset($values['meta'])) {
+      $meta = $values['meta'];
+      foreach ($meta as $meta_key => $meta_value) {
+		 update_post_meta($this->id, $meta_key, $meta_value);
+      }
+    }
     
     if (!empty($_FILES['attachment'])) {
       include_once ABSPATH . '/wp-admin/includes/file.php';
