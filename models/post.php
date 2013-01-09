@@ -77,6 +77,10 @@ class JSON_API_Post {
       $author = $json_api->introspector->get_author_by_login($values['author']);
       $wp_values['post_author'] = $author->id;
     }
+
+	if (!empty($values['date'])) {
+      $wp_values['post_date'] = $values['date'];
+    }
     
     if (!empty($values['date'])) {
       $wp_values['post_date'] = $values['date'];
@@ -111,6 +115,13 @@ class JSON_API_Post {
       $this->id = wp_update_post($wp_values);
     } else {
       $this->id = wp_insert_post($wp_values);
+    }
+
+	if (isset($values['meta'])) {
+      $meta = $values['meta'];
+      foreach ($meta as $meta_key => $meta_value) {
+		 update_post_meta($this->id, $meta_key, $meta_value);
+      }
     }
     
     if (!empty($_FILES['attachment'])) {
