@@ -57,6 +57,10 @@ class JSON_API_Post {
       $wp_values['ID'] = $values['id'];
     }
     
+    if (!empty($values['slug'])) {
+      $wp_values['post_name'] = $values['slug'];
+    }
+    
     if (!empty($values['type'])) {
       $wp_values['post_type'] = $values['type'];
     }
