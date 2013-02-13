@@ -5,7 +5,26 @@ Controller description: Data manipulation methods for posts
 */
 
 class JSON_API_Posts_Controller {
-
+  public function post_exists() {
+    global $json_api;
+    $this->authenticate();
+    nocache_headers();
+    
+    # custom field request
+    if ($json_api->query->meta) {
+      $args = array('meta_query' => array());
+      foreach ($json_api->query->meta as $key => $value) {
+        array_push($args['meta_query'], array('key' => $key, 'value' => $value));
+      }
+      $query = new WP_Query( $args );
+      if ($query->have_posts()) {
+        return array( 'result' => true);
+      } else {
+        return array( 'result' => false);
+      }
+    }
+  }
+  
   public function create_post() {
     global $json_api;
     $this->authenticate();
