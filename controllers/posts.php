@@ -12,7 +12,7 @@ class JSON_API_Posts_Controller {
     
     # custom field request
     if ($json_api->query->meta) {
-      $args = array('meta_query' => array());
+      $args = array('meta_query' => array(), 'post_status' => 'future|post|trash');
       foreach ($json_api->query->meta as $key => $value) {
         array_push($args['meta_query'], array('key' => $key, 'value' => $value));
       }
