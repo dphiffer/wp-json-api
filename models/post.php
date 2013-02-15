@@ -252,12 +252,20 @@ class JSON_API_Post {
     global $json_api;
     if ($json_api->include_value('custom_fields') &&
         $json_api->query->custom_fields) {
-      $keys = explode(',', $json_api->query->custom_fields);
-      $wp_custom_fields = get_post_custom($this->id);
-      $this->custom_fields = new stdClass();
-      foreach ($keys as $key) {
-        if (isset($wp_custom_fields[$key])) {
-          $this->custom_fields->$key = $wp_custom_fields[$key];
+      if($json_api->query->custom_fields == 'all') {
+        $wp_custom_fields = get_post_custom($this->id);
+        $this->custom_fields = new stdClass();
+        foreach ( $wp_custom_fields as $key => $value ){
+          $this->custom_fields->$key = $value;
+        }
+      } else {
+        $keys = explode(',', $json_api->query->custom_fields);
+        $wp_custom_fields = get_post_custom($this->id);
+        $this->custom_fields = new stdClass();
+        foreach ($keys as $key) {
+          if (isset($wp_custom_fields[$key])) {
+            $this->custom_fields->$key = $wp_custom_fields[$key];
+          }
         }
       }
     } else {
