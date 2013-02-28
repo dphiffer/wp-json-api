@@ -356,7 +356,7 @@ class JSON_API {
     $wp_rewrite->flush_rules();
   }
   
-  function error($message = 'Unknown error', $status = 'error', $header = '200 OK') {
+  function error($message = 'Unknown error', $status = 'error', $header = '400') {
     $this->response->respond(array(
       'error' => $message
     ), $status, $header);
