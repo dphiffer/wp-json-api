@@ -57,7 +57,7 @@ class JSON_API_Response {
     }
   }
   
-  function respond($result, $status = 'ok') {
+  function respond($result, $status = 'ok', $header) {
     global $json_api;
     $json = $this->get_json($result, $status);
     $status_redirect = "redirect_$status";
@@ -80,15 +80,15 @@ class JSON_API_Response {
       $this->callback($json_api->query->callback, $json);
     } else {
       // Output the result
-      $this->output($json);
+      $this->output($json, $header);
     }
     exit;
   }
   
-  function output($result) {
+  function output($result, $header) {
     $charset = get_option('blog_charset');
     if (!headers_sent()) {
-      header('HTTP/1.1 200 OK', true);
+      header("HTTP/1.1 ${$header}", true);
       header("Content-Type: application/json; charset=$charset", true);
     }
     echo $result;
