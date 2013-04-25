@@ -82,7 +82,7 @@ class JSON_API_Post {
       $wp_values['post_author'] = $author->id;
     }
 
-	if (!empty($values['date'])) {
+    if (!empty($values['date'])) {
       $wp_values['post_date'] = $values['date'];
     }
     
@@ -120,11 +120,13 @@ class JSON_API_Post {
     } else {
       $this->id = wp_insert_post($wp_values);
     }
+    
+    
 
-	if (isset($values['meta'])) {
+    if (isset($values['meta'])) {
       $meta = $values['meta'];
       foreach ($meta as $meta_key => $meta_value) {
-		 update_post_meta($this->id, $meta_key, $meta_value);
+        update_post_meta($this->id, $meta_key, $meta_value, true);
       }
     }
     
