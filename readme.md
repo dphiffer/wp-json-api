@@ -1,10 +1,8 @@
 # JSON API
-Contributors: dphiffer
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DH4MEG99JR2WE
-Tags: json, api, ajax, cms, admin, integration, moma
-Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 1.0.7
+* Contributors: dphiffer, Achilles Charmpilas, jbergen, fric, Eric Davies, Alexis Kinsela, Blaine Schmeisser and many more
+* Tags: json, api, ajax, cms, admin, integration, moma
+* Requires at least: 2.8
+* Tested up to: 3.5.1
 
 A RESTful API for WordPress
 
@@ -16,14 +14,15 @@ JSON API allows you to retrieve and manipulate WordPress content using HTTP requ
 2. Create a stable, understandable internal implementation
 3. Enable new types of extensions for WordPress
 
-This plugin was created at [The Museum of Modern Art](http://moma.org/) for the weblog [Inside/Out](http://moma.org/explore/inside_out), which is served from Ruby on Rails. Instead of reimplementing the site templates as a WordPress theme, we opted for a Rails front-end that displays content served from a WordPress back-end. JSON API provides the necessary interface for retrieving content and accepting comment submissions.
+This plugin was initially created at [The Museum of Modern Art](http://moma.org/) for the weblog [Inside/Out](http://moma.org/explore/inside_out), which is served from Ruby on Rails. Instead of reimplementing the site templates as a WordPress theme, we opted for a Rails front-end that displays content served from a WordPress back-end. JSON API provides the necessary interface for retrieving content and accepting comment submissions.
 
-See the [Other Notes](http://wordpress.org/extend/plugins/json-api/other_notes/) section for the complete documentation.
+From 2011 onwards, this up-to-date fork has been maintained and extended by the community. This plugin is NOT available on the Wordpress site, please download a master zipfile and upload to your blog.
 
 ### Installation
 
 1. Upload the `json-api` folder to the `/wp-content/plugins/` directory or install directly through the plugin installer.
 2. Activate the plugin through the 'Plugins' menu in WordPress or by using the link provided by the plugin installer.
+3. Visit 'Settings &raquo; JSON Api' and activate the desired controllers.
 
 ### Screenshots
 
@@ -177,6 +176,8 @@ Request methods are available from the following controllers:
 * Core controller - basic introspection methods
 * Posts controller - data manipulation methods for posts
 * Respond controller - comment/trackback submission methods
+* Multisite controller - Introspection and Data manipulation methods for multisite blogs
+* Users controller - Data manipulation methods for users
 
 ### 2.1. Core controller methods
 
