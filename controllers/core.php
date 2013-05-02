@@ -41,6 +41,26 @@ class JSON_API_Core_Controller {
     $posts = $json_api->introspector->get_posts();
     return $this->posts_result($posts);
   }
+
+  public function get_posts() {
+    global $json_api;
+    $allowed_vars = array(
+       'posts_per_page', 'numberposts', 'offset', 'category', 'orderby'
+      ,'order', 'include', 'exclude', 'meta_key', 'meta_value'
+      ,'post_type', 'post_mime_type', 'post_parent', 'post_status', 'suppress_filters' 
+    );
+    extract($json_api->query->get($allowed_vars));
+
+    $args = array();
+    foreach ($allowed_vars as $allowed_var) {
+      if ($$allowed_var) {
+        $args[$allowed_var] = $$allowed_var;
+      }
+    }
+
+    $posts = $json_api->introspector->get_posts($args);
+    return $this->posts_result($posts);
+  }
   
   public function get_post() {
     global $json_api, $post;
