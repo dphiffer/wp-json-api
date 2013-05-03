@@ -19,7 +19,7 @@ class JSON_API_Attachment {
       }
     }
   }
-  
+
   function import_wp_object($wp_attachment) {
     $this->id = (int) $wp_attachment->ID;
     $this->url = $wp_attachment->guid;
@@ -40,6 +40,7 @@ class JSON_API_Attachment {
     if (function_exists('get_intermediate_image_sizes')) {
       $sizes = array_merge(array('full'), get_intermediate_image_sizes());
     }
+
     $this->images = array();
     foreach ($sizes as $size) {
       list($url, $width, $height) = wp_get_attachment_image_src($this->id, $size);
@@ -49,6 +50,10 @@ class JSON_API_Attachment {
         'height' => $height
       );
     }
+
+    // image attachments may have alt text
+    $alt_text = get_post_meta($this->id, '_wp_attachment_image_alt', true);
+    if ($alt_text) { $this->alt_text = $alt_text; }
   }
   
 }
