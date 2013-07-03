@@ -3,8 +3,8 @@ Contributors: dphiffer
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DH4MEG99JR2WE
 Tags: json, api, ajax, cms, admin, integration, moma
 Requires at least: 2.8
-Tested up to: 3.5.1
-Stable tag: 1.0.9
+Tested up to: 3.5.2
+Stable tag: 1.1.0
 
 A RESTful API for WordPress
 
@@ -689,7 +689,7 @@ The following arguments modify how you get results back from the API. The redire
 * Setting `redirect` to a URL will cause the user's browser to redirect to the specified URL with a `status` value appended to the query vars (see the *Response objects* section below for an explanation of status values).
 * Setting `redirect_[status]` allows you to control the resulting browser redirection depending on the `status` value.
 * Setting `dev` to a non-empty value adds whitespace for readability and responds with `text/plain`
-* Setting `json_encode_options` will let you specify an integer bitmask to modify the behavior of [PHP's `json_encode`](http://php.net/manual/en/function.json-encode.php)
+* Setting `json_encode_options` will let you specify an integer bitmask to modify the behavior of [PHP's `json_encode`](http://php.net/manual/en/function.json-encode.php) (Note: this option is only recognized in PHP version 5.3+)
 * Setting `json_unescaped_unicode` will replace unicode-escaped characters with their unescaped equivalents (e.g., `\u00e1` becomes á)
 * Omitting all of the above arguments will result in a standard JSON response.
 
@@ -1034,6 +1034,10 @@ You should see the test results print out culminating in a summary:
 
 == Changelog ==
 
+= 1.1.0 (2013-06-22): =
+* Bugfix for `json_encode` compatibility with PHP < 5.3
+* Bugfix for `get_author_index` warnings in WordPress > 3.5
+
 = 1.0.9 (2013-06-21): =
 * Added `update_post` and `delete_post` methods to Post controller
 * Added two JSON encoding arguments: `json_encode_options` and `json_unescaped_unicode`
@@ -1157,6 +1161,9 @@ You should see the test results print out culminating in a summary:
 * Initial Public Release
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Minor bugfixes
 
 = 1.0.9 =
 Update/delete post methods and some other bugfixes and improvements

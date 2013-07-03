@@ -33,11 +33,15 @@ class JSON_API_Response {
     
     if (function_exists('json_encode')) {
       // Use the built-in json_encode function if it's available
-      $json_encode_options = 0;
-      if ($json_api->query->json_encode_options) {
-        $json_encode_options = $json_api->query->json_encode_options;
+      if (version_compare(PHP_VERSION, '5.3') < 0) {
+        $json = json_encode($data);
+      } else {
+        $json_encode_options = 0;
+        if ($json_api->query->json_encode_options) {
+          $json_encode_options = $json_api->query->json_encode_options;
+        }
+        $json = json_encode($data, $json_encode_options);
       }
-      $json = json_encode($data, $json_encode_options);
     } else {
       // Use PEAR's Services_JSON encoder otherwise
       if (!class_exists('Services_JSON')) {
@@ -48,6 +52,7 @@ class JSON_API_Response {
       $json = $json_service->encode($data);
     }
     
+    // Thanks to Stack Overflow user Gumbo stackoverflow.com/questions/2934563
     if ($json_api->query->json_unescaped_unicode) {
       $callback = array($this, 'replace_unicode_escape_sequence');
       $json = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', $callback, $json);

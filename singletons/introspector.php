@@ -171,14 +171,14 @@ class JSON_API_Introspector {
   
   public function get_authors() {
     global $wpdb;
-    $author_ids = $wpdb->get_col($wpdb->prepare("
+    $author_ids = $wpdb->get_col("
       SELECT u.ID, m.meta_value AS last_name
       FROM $wpdb->users AS u,
            $wpdb->usermeta AS m
       WHERE m.user_id = u.ID
         AND m.meta_key = 'last_name'
       ORDER BY last_name
-    "));
+    ");
     $all_authors = array_map(array(&$this, 'get_author_by_id'), $author_ids);
     $active_authors = array_filter($all_authors, array(&$this, 'is_active_author'));
     return $active_authors;
