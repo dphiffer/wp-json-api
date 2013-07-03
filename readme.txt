@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: json, api, ajax, cms, admin, integration, moma
 Requires at least: 2.8
 Tested up to: 3.5.1
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 
 A RESTful API for WordPress
 
@@ -54,10 +54,10 @@ See the [Other Notes](http://wordpress.org/extend/plugins/json-api/other_notes/)
 5. [Extending JSON API](#5.-Extending-JSON-API)  
    5.1. [Plugin hooks](#5.1.-Plugin-hooks)  
    5.2. [Developing JSON API controllers](#5.2.-Developing-JSON-API-controllers)  
-   5.3. [Configuration options](#5.3.-Configuration-options)
-6. [Unit tests](#6.-Unit-tests)
-   6.1. [Preparing a WordPress test site](#6.1.-Preparing-a-WordPress-test-site)
-   6.2. [Running the tests](#6.2.-Running-the-tests)
+   5.3. [Configuration options](#5.3.-Configuration-options)  
+6. [Unit tests](#6.-Unit-tests)  
+   6.1. [Preparing a WordPress test site](#6.1.-Preparing-a-WordPress-test-site)  
+   6.2. [Running the tests](#6.2.-Running-the-tests)  
 
 == 1. General Concepts ==
 
@@ -191,7 +191,7 @@ Returns information about JSON API.
 
 * `controller` - returns detailed information about a specific controller
 
-= Response to `?json=core.info` =
+= Response =
 
     {
       "status": "ok",
@@ -202,7 +202,7 @@ Returns information about JSON API.
     }
 
 
-= Response to `?json=core.info&controller=core` =
+= Response with “controller=core” =
 
     {
       "status": "ok",
@@ -224,7 +224,7 @@ Returns an array of recent posts. You can invoke this from the WordPress home pa
 * `page` - return a specific page number from the results
 * `post_type` - used to retrieve custom post types
 
-= Response to `?json=core.get_recent_posts` =
+= Response =
 
     {
       "status": "ok",
@@ -252,7 +252,7 @@ Returns posts according to WordPress's [`WP_Query` parameters](http://codex.word
 __Further reading__  
 See the [`WP_Query` documentation](http://codex.wordpress.org/Class_Reference/WP_Query#Parameters) for a full list of supported parameters. The `post_status` parameter is currently ignored.
 
-= Response to `?json=get_posts&meta_key=enclosure` =
+= Response =
 
     {
       "status": "ok",
@@ -490,6 +490,10 @@ Note: the tree is arranged by `response.tree.[year].[month].[number of posts]`.
 
 Returns an array of active categories.
 
+= Optional argument =
+
+* `parent` - returns categories that are direct children of the parent ID
+
 = Response =
 
     {
@@ -594,6 +598,43 @@ Creates a new post.
 
 Note: including a file upload field called `attachment` will cause an attachment to be stored with your new post.
 
+== Method: update_post ==
+
+Updates a post.
+
+= Required argument =
+
+* `nonce` - available from the `get_nonce` method (call with vars `controller=posts` and `method=update_post`)
+
+= One of the following is required =
+
+* `id` or `post_id` - set to the post's ID
+* `slug` or `post_slug` - set to the post's URL slug
+
+= Optional arguments =
+
+* `status` - sets the post status ("draft" or "publish"), default is "draft"
+* `title` - the post title
+* `content` - the post content
+* `author` - the post's author (login name), default is the current logged in user
+* `categories` - a comma-separated list of categories (URL slugs)
+* `tags` - a comma-separated list of tags (URL slugs)
+
+Note: including a file upload field called `attachment` will cause an attachment to be stored with your post.
+
+== Method: delete_post ==
+
+Deletes a post.
+
+= Required argument =
+
+* `nonce` - available from the `get_nonce` method (call with vars `controller=posts` and `method=delete_post`)
+
+= One of the following is required =
+
+* `id` or `post_id` - set to the post's ID
+* `slug` or `post_slug` - set to the post's URL slug
+
 
 == 2.3. Respond controller methods ==
 
@@ -648,6 +689,8 @@ The following arguments modify how you get results back from the API. The redire
 * Setting `redirect` to a URL will cause the user's browser to redirect to the specified URL with a `status` value appended to the query vars (see the *Response objects* section below for an explanation of status values).
 * Setting `redirect_[status]` allows you to control the resulting browser redirection depending on the `status` value.
 * Setting `dev` to a non-empty value adds whitespace for readability and responds with `text/plain`
+* Setting `json_encode_options` will let you specify an integer bitmask to modify the behavior of [PHP's `json_encode`](http://php.net/manual/en/function.json-encode.php)
+* Setting `json_unescaped_unicode` will replace unicode-escaped characters with their unescaped equivalents (e.g., `\u00e1` becomes á)
 * Omitting all of the above arguments will result in a standard JSON response.
 
 == 3.2. Content-modifying arguments ==
@@ -991,6 +1034,13 @@ You should see the test results print out culminating in a summary:
 
 == Changelog ==
 
+= 1.0.9 (2013-06-21): =
+* Added `update_post` and `delete_post` methods to Post controller
+* Added two JSON encoding arguments: `json_encode_options` and `json_unescaped_unicode`
+* Added a `parent` argument to `get_category_index`
+* Fixed a couple places where the code was generating PHP notifications
+* Updated bundled Services_JSON library (only used if `json_encode` is unavailable)
+
 = 1.0.8 (2013-06-12): =
 * Added `widgets` controller
 * Added a generic `get_posts` method to the core controller
@@ -1107,6 +1157,9 @@ You should see the test results print out culminating in a summary:
 * Initial Public Release
 
 == Upgrade Notice ==
+
+= 1.0.9 =
+Update/delete post methods and some other bugfixes and improvements
 
 = 1.0.8 =
 Long overdue bugfix/improvement release

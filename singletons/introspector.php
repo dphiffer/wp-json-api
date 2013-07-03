@@ -67,8 +67,8 @@ class JSON_API_Introspector {
     return $this->month_archives["$year$month"];
   }
   
-  public function get_categories() {
-    $wp_categories = get_categories();
+  public function get_categories($args = null) {
+    $wp_categories = get_categories($args);
     $categories = array();
     foreach ($wp_categories as $wp_category) {
       if ($wp_category->term_id == 1 && $wp_category->slug == 'uncategorized') {
@@ -77,6 +77,33 @@ class JSON_API_Introspector {
       $categories[] = $this->get_category_object($wp_category);
     }
     return $categories;
+  }
+  
+  public function get_current_post() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'slug', 'post_id', 'post_slug')));
+    if ($id || $post_id) {
+      if (!$id) {
+        $id = $post_id;
+      }
+      $posts = $this->get_posts(array(
+        'p' => $id
+      ), true);
+    } else if ($slug || $post_slug) {
+      if (!$slug) {
+        $slug = $post_slug;
+      }
+      $posts = $this->get_posts(array(
+        'name' => $slug
+      ), true);
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+    }
+    if (!empty($posts)) {
+      return $posts[0];
+    } else {
+      return null;
+    }
   }
   
   public function get_current_category() {

@@ -41,7 +41,7 @@ class JSON_API_Attachment {
       $sizes = array_merge(array('full'), get_intermediate_image_sizes());
     }
     $this->images = array();
-    $home = get_bloginfo('home');
+    $home = get_bloginfo('url');
     foreach ($sizes as $size) {
       list($url, $width, $height) = wp_get_attachment_image_src($this->id, $size);
       $filename = ABSPATH . substr($url, strlen($home) + 1);

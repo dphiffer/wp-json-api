@@ -3,7 +3,7 @@
 Plugin Name: JSON API
 Plugin URI: http://wordpress.org/plugins/json-api/
 Description: A RESTful API for WordPress
-Version: 1.0.8
+Version: 1.0.9
 Author: Dan Phiffer
 Author URI: http://phiffer.org/
 */
