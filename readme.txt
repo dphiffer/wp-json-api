@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: json, api, ajax, cms, admin, integration, moma
 Requires at least: 2.8
 Tested up to: 3.5.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 
 A RESTful API for WordPress
 
@@ -689,6 +689,7 @@ The following arguments modify how you get results back from the API. The redire
 * Setting `redirect` to a URL will cause the user's browser to redirect to the specified URL with a `status` value appended to the query vars (see the *Response objects* section below for an explanation of status values).
 * Setting `redirect_[status]` allows you to control the resulting browser redirection depending on the `status` value.
 * Setting `dev` to a non-empty value adds whitespace for readability and responds with `text/plain`
+* Errors are suppressed unless `dev` is set to a non-empty value
 * Setting `json_encode_options` will let you specify an integer bitmask to modify the behavior of [PHP's `json_encode`](http://php.net/manual/en/function.json-encode.php) (Note: this option is only recognized in PHP version 5.3+)
 * Setting `json_unescaped_unicode` will replace unicode-escaped characters with their unescaped equivalents (e.g., `\u00e1` becomes á)
 * Omitting all of the above arguments will result in a standard JSON response.
@@ -766,6 +767,7 @@ Developers familiar with WordPress may notice that many names for properties and
 * `comment_status` - String (`"open"` or `"closed"`)
 * `thumbnail` - String (only included if a post thumbnail has been specified)
 * `custom_fields` - Object (included by setting the `custom_fields` argument to a comma-separated list of custom field names)
+* `taxonomy_(taxonomy)` - Array of custom taxonomy objects (these resemble Category or Tag response objects, depending on whether the taxonomy is hierarchical)
 
 __Note__  
 The `thumbnail` attribute returns a URL to the image size specified by the optional `thumbnail_size` request argument. By default this will use the `thumbnail` or `post-thumbnail` sizes, depending on your version of WordPress. See [Mark Jaquith's post on the topic](http://markjaquith.wordpress.com/2009/12/23/new-in-wordpress-2-9-post-thumbnail-images/) for more information.
@@ -1034,6 +1036,10 @@ You should see the test results print out culminating in a summary:
 
 == Changelog ==
 
+= 1.1.1 (2013-06-23): =
+* Added support for custom taxonomies
+* Errors are now suppressed unless you include a non-empty `dev` argument
+
 = 1.1.0 (2013-06-22): =
 * Bugfix for `json_encode` compatibility with PHP < 5.3
 * Bugfix for `get_author_index` warnings in WordPress > 3.5
@@ -1161,6 +1167,9 @@ You should see the test results print out culminating in a summary:
 * Initial Public Release
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Added support for custom taxonomies
 
 = 1.1.0 =
 Minor bugfixes

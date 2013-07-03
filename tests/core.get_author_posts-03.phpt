@@ -5,7 +5,7 @@ core.get_author_posts by id
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_author_posts&id=2&count=20');
+$http->get('http://wordpress.test/?json=core.get_author_posts&id=2&count=20&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $author = $response->author;

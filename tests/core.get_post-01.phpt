@@ -5,7 +5,7 @@ core.get_post default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_post&slug=markup-html-tags-and-formatting');
+$http->get('http://wordpress.test/?json=core.get_post&slug=markup-html-tags-and-formatting&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 

@@ -5,7 +5,7 @@ core.get_tag_index
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_tag_index');
+$http->get('http://wordpress.test/?json=core.get_tag_index&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 

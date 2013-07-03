@@ -21,6 +21,10 @@ class JSON_API {
     
     if ($controller) {
       
+      if (empty($this->query->dev)) {
+        error_reporting(0);
+      }
+      
       if (!in_array($controller, $active_controllers)) {
         $this->error("Unknown controller '$controller'.");
       }
@@ -185,7 +189,7 @@ class JSON_API {
                 <?php
                 
                 foreach($info['methods'] as $method) {
-                  $url = $this->get_method_url($controller, $method, array('dev' => 1));
+                  $url = $this->get_method_url($controller, $method);
                   if ($active) {
                     echo "<code><a href=\"$url\">$method</a></code> ";
                   } else {

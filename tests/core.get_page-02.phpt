@@ -5,7 +5,7 @@ core.get_page children argument
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_page&slug=level-1&children=1');
+$http->get('http://wordpress.test/?json=core.get_page&slug=level-1&children=1&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $page = $response->page;

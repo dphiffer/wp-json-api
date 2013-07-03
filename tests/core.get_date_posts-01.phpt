@@ -5,7 +5,7 @@ core.get_date_posts by day
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_date_posts&date=2013-01');
+$http->get('http://wordpress.test/?json=core.get_date_posts&date=2013-01&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $post = $response->posts[0];

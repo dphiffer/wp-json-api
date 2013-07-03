@@ -5,7 +5,7 @@ core.get_posts by meta key
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_posts&meta_key=enclosure');
+$http->get('http://wordpress.test/?json=core.get_posts&meta_key=enclosure&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $post = $response->posts[0];

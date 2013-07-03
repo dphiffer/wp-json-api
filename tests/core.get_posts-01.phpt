@@ -5,7 +5,7 @@ core.get_posts default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_posts');
+$http->get('http://wordpress.test/?json=core.get_posts&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $post = $response->posts[0];
