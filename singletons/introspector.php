@@ -3,16 +3,17 @@
 class JSON_API_Introspector {
   
   public function get_posts($query = false, $wp_posts = false) {
-    global $post;
+    global $post, $wp_query;
     $this->set_posts_query($query);
     $output = array();
     while (have_posts()) {
       the_post();
       if ($wp_posts) {
-        $output[] = $post;
+        $new_post = $post;
       } else {
-        $output[] = new JSON_API_Post($post);
+        $new_post = new JSON_API_Post($post);
       }
+      $output[] = $new_post;
     }
     return $output;
   }
@@ -215,7 +216,8 @@ class JSON_API_Introspector {
       'post_type' => 'attachment',
       'post_parent' => $post_id,
       'orderby' => 'menu_order',
-      'order' => 'ASC'
+      'order' => 'ASC',
+      'suppress_filters' => false
     ));
     $attachments = array();
     if (!empty($wp_attachments)) {
@@ -226,16 +228,32 @@ class JSON_API_Introspector {
     return $attachments;
   }
   
+  public function get_attachment($attachment_id) {
+    global $wpdb;
+    $wp_attachment = $wpdb->get_row(
+      $wpdb->prepare("
+        SELECT *
+        FROM $wpdb->posts
+        WHERE ID = %d
+      ", $attachment_id)
+    );
+    return new JSON_API_Attachment($wp_attachment);
+  }
+  
   public function attach_child_posts(&$post) {
     $post->children = array();
     $wp_children = get_posts(array(
       'post_type' => $post->type,
       'post_parent' => $post->id,
       'order' => 'ASC',
-      'orderby' => 'menu_order'
+      'orderby' => 'menu_order',
+      'numberposts' => -1,
+      'suppress_filters' => false
     ));
     foreach ($wp_children as $wp_post) {
-      $post->children[] = new JSON_API_Post($wp_post);
+      $new_post = new JSON_API_Post($wp_post);
+      $new_post->parent = $post->id;
+      $post->children[] = $new_post;
     }
     foreach ($post->children as $child) {
       $this->attach_child_posts($child);
@@ -291,6 +309,7 @@ class JSON_API_Introspector {
     
     if (!empty($query)) {
       query_posts($query);
+      do_action('json_api_query', $wp_query);
     }
   }
   

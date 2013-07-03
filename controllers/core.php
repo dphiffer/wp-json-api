@@ -42,6 +42,22 @@ class JSON_API_Core_Controller {
     return $this->posts_result($posts);
   }
   
+  public function get_posts() {
+    global $json_api;
+    $url = parse_url($_SERVER['REQUEST_URI']);
+    $defaults = array(
+      'ignore_sticky_posts' => true
+    );
+    $query = wp_parse_args($url['query']);
+    unset($query['json']);
+    unset($query['post_status']);
+    $query = array_merge($defaults, $query);
+    $posts = $json_api->introspector->get_posts($query);
+    $result = $this->posts_result($posts);
+    $result['query'] = $query;
+    return $result;
+  }
+  
   public function get_post() {
     global $json_api, $post;
     extract($json_api->query->get(array('id', 'slug', 'post_id', 'post_slug')));
@@ -239,10 +255,12 @@ class JSON_API_Core_Controller {
   public function get_page_index() {
     global $json_api;
     $pages = array();
+    $post_type = $json_api->query->post_type ? $json_api->query->post_type : 'page';
+    
     // Thanks to blinder for the fix!
     $numberposts = empty($json_api->query->count) ? -1 : $json_api->query->count;
     $wp_posts = get_posts(array(
-      'post_type' => 'page',
+      'post_type' => $post_type,
       'post_parent' => 0,
       'order' => 'ASC',
       'orderby' => 'menu_order',

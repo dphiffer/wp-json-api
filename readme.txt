@@ -3,8 +3,8 @@ Contributors: dphiffer
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DH4MEG99JR2WE
 Tags: json, api, ajax, cms, admin, integration, moma
 Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 1.0.7
+Tested up to: 3.5.1
+Stable tag: 1.0.8
 
 A RESTful API for WordPress
 
@@ -31,32 +31,33 @@ See the [Other Notes](http://wordpress.org/extend/plugins/json-api/other_notes/)
 
 == Documentation ==
 
-1. General concepts  
-   1.1. Requests  
-   1.2. Controllers  
-   1.3. Responses  
-2. Request methods  
-   2.1. Core controller methods  
-   2.2. Posts controller methods  
-   2.3. Respond controller methods  
-3. Request arguments  
-   3.1. Output-modifying arguments  
-   3.2. Content-modifying arguments  
-   3.3. Using include/exclude and redirects  
-4. Response objects  
-   4.1. Post response object  
-   4.2. Category response object  
-   4.3. Tag response object  
-   4.4. Author response object  
-   4.4. Comment response object  
-   4.5. Attachment response object  
-5. Extending JSON API  
-   5.1. Plugin hooks  
-   5.2. Developing JSON API controllers  
-   5.3. Configuration options
-6. Unit tests
-   6.1. Preparing a WordPress test site
-   6.2. Running the tests
+1. [General concepts](#1.-General-Concepts)  
+   1.1. [Requests](#1.1.-Requests)  
+   1.2. [Controllers](#1.2.-Controllers)  
+   1.3. [Responses](#1.3.-Responses)  
+2. [Request methods](#2.-Request-methods)  
+   2.1. [Core controller methods](#2.1.-Core-controller-methods)  
+   2.2. [Posts controller methods](#2.2.-Pages-controller-methods)  
+   2.3. [Respond controller methods](#2.3.-Respond-controller-methods)  
+   2.4. [Widgets controller methods](#2.4.-Widgets-controller-methods)  
+3. [Request arguments](#3.-Request-arguments)  
+   3.1. [Output-modifying arguments](#3.1.-Output-modifying-arguments)  
+   3.2. [Content-modifying arguments](#3.2.-Content-modifying-arguments)  
+   3.3. [Using include/exclude and redirects](#3.3.-Using-include/exclude-and-redirects)  
+4. [Response objects](#4.-Response-objects)  
+   4.1. [Post response object](#4.1.-Post-response-object)  
+   4.2. [Category response object](#4.2.-Category-response-object)  
+   4.3. [Tag response object](#4.3.-Tag-response-object)  
+   4.4. [Author response object](#4.4.-Author-response-object)  
+   4.5. [Comment response object](#4.5.-Comment-response-object)  
+   4.6. [Attachment response object](#4.6.-Attachment-response-object)  
+5. [Extending JSON API](#5.-Extending-JSON-API)  
+   5.1. [Plugin hooks](#5.1.-Plugin-hooks)  
+   5.2. [Developing JSON API controllers](#5.2.-Developing-JSON-API-controllers)  
+   5.3. [Configuration options](#5.3.-Configuration-options)
+6. [Unit tests](#6.-Unit-tests)
+   6.1. [Preparing a WordPress test site](#6.1.-Preparing-a-WordPress-test-site)
+   6.2. [Running the tests](#6.2.-Running-the-tests)
 
 == 1. General Concepts ==
 
@@ -175,6 +176,7 @@ Request methods are available from the following controllers:
 * Core controller - basic introspection methods
 * Posts controller - data manipulation methods for posts
 * Respond controller - comment/trackback submission methods
+* Widgets controller - retrieve sidebar widgets
 
 == 2.1. Core controller methods ==
 
@@ -189,7 +191,7 @@ Returns information about JSON API.
 
 * `controller` - returns detailed information about a specific controller
 
-= Response =
+= Response to `?json=core.info` =
 
     {
       "status": "ok",
@@ -199,8 +201,8 @@ Returns information about JSON API.
       ]
     }
 
-  
-= Response =
+
+= Response to `?json=core.info&controller=core` =
 
     {
       "status": "ok",
@@ -222,7 +224,7 @@ Returns an array of recent posts. You can invoke this from the WordPress home pa
 * `page` - return a specific page number from the results
 * `post_type` - used to retrieve custom post types
 
-= Response =
+= Response to `?json=core.get_recent_posts` =
 
     {
       "status": "ok",
@@ -235,7 +237,31 @@ Returns an array of recent posts. You can invoke this from the WordPress home pa
         ...
       ]
     }
+    
 
+== Method: get_posts ==
+
+Returns posts according to WordPress's [`WP_Query` parameters](http://codex.wordpress.org/Class_Reference/WP_Query#Parameters). The one default parameter is `ignore_sticky_posts=1` (this can be overridden).
+
+= Optional arguments =
+
+* `count` - determines how many posts per page are returned (default value is 10)
+* `page` - return a specific page number from the results
+* `post_type` - used to retrieve custom post types
+
+__Further reading__  
+See the [`WP_Query` documentation](http://codex.wordpress.org/Class_Reference/WP_Query#Parameters) for a full list of supported parameters. The `post_status` parameter is currently ignored.
+
+= Response to `?json=get_posts&meta_key=enclosure` =
+
+    {
+      "status": "ok",
+      "count": 1,
+      "posts": [
+        { ... }
+      ]
+    }
+    
 
 == Method: get_post ==
 
@@ -593,6 +619,16 @@ Submits a comment to a WordPress post.
 
 * `pending` - assigned if the comment submission is pending moderation
 
+== 2.4. Widgets controller methods ==
+
+== Method: get_sidebar ==
+
+Retrieves widgets assigned to a sidebar.
+
+= Required arguments =
+
+* `sidebar_id` - the name or number of the sidebar to retrieve
+
 
 == 3. Request arguments ==
 
@@ -934,7 +970,7 @@ There are a few necessary steps that need to be carried out before the test suit
 2. Configure and install a new copy of WordPress
 3. Delete the Hello World post and Sample Page (titled "About" in some versions of WordPress)
 4. Enable user-friendly URLs from Settings > Permalinks, use the "Day and name" format
-5. Install the JSON API plugin and enable all bundled controllers from Settings > JSON API
+5. Install + Activate the JSON API plugin and enable all bundled controllers from Settings > JSON API
 6. Import the [Theme Unit Test](http://codex.wordpress.org/Theme_Unit_Test) test data XML file from Settings > Import > WordPress (you will need to install the WordPress Importer plugin)
 
 == 6.2. Running the tests ==
@@ -954,6 +990,16 @@ You should see the test results print out culminating in a summary:
     0 SKIPPED TESTS
 
 == Changelog ==
+
+= 1.0.8 (2013-06-12): =
+* Added `widgets` controller
+* Added a generic `get_posts` method to the core controller
+* Added a `thumbnail_images` object property to complement `thumbnail` URL
+* Attachment image files are now checked to exist and match the expected width/height
+* Fixed a bug where `the_excerpt` filter wasn't being applied to the `excerpt` property
+* Fixed a bug where the number of child pages was being limited to 5
+* Fixed a bug where custom controller class names couldn't include numerics
+* Theme directory check for custom controllers
 
 = 1.0.7 (2011-01-27): =
 * Created some basic unit tests
@@ -1061,6 +1107,9 @@ You should see the test results print out culminating in a summary:
 * Initial Public Release
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+Long overdue bugfix/improvement release
 
 = 1.0.7 =
 Minor bugfix/improvement release

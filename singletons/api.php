@@ -43,6 +43,7 @@ class JSON_API {
         $this->response->setup();
         
         // Run action hooks for method
+        do_action("json_api", $controller, $method);
         do_action("json_api-{$controller}-$method");
         
         // Error out if nothing is found
@@ -275,14 +276,22 @@ class JSON_API {
   function get_controllers() {
     $controllers = array();
     $dir = json_api_dir();
-    $dh = opendir("$dir/controllers");
-    while ($file = readdir($dh)) {
-      if (preg_match('/(.+)\.php$/', $file, $matches)) {
-        $controllers[] = $matches[1];
-      }
-    }
+    $this->check_directory_for_controllers("$dir/controllers", $controllers);
+    $this->check_directory_for_controllers(get_stylesheet_directory(), $controllers);
     $controllers = apply_filters('json_api_controllers', $controllers);
     return array_map('strtolower', $controllers);
+  }
+  
+  function check_directory_for_controllers($dir, &$controllers) {
+    $dh = opendir($dir);
+    while ($file = readdir($dh)) {
+      if (preg_match('/(.+)\.php$/i', $file, $matches)) {
+        $src = file_get_contents("$dir/$file");
+        if (preg_match("/class\s+JSON_API_{$matches[1]}_Controller/i", $src)) {
+          $controllers[] = $matches[1];
+        }
+      }
+    }
   }
   
   function controller_is_active($controller) {
@@ -340,9 +349,19 @@ class JSON_API {
   }
   
   function controller_path($controller) {
-    $dir = json_api_dir();
+    $json_api_dir = json_api_dir();
+    $json_api_path = "$json_api_dir/controllers/$controller.php";
+    $theme_dir = get_stylesheet_directory();
+    $theme_path = "$theme_dir/$controller.php";
+    if (file_exists($theme_path)) {
+      $path = $theme_path;
+    } else if (file_exists($json_api_path)) {
+      $path = $json_api_path;
+    } else {
+      $path = null;
+    }
     $controller_class = $this->controller_class($controller);
-    return apply_filters("{$controller_class}_path", "$dir/controllers/$controller.php");
+    return apply_filters("{$controller_class}_path", $path);
   }
   
   function get_nonce_id($controller, $method) {
