@@ -20,6 +20,7 @@ class JSON_API_Response {
   }
   
   function get_json($data, $status = 'ok') {
+    global $json_api;
     // Include a status value with the response
     if (is_array($data)) {
       $data = array_merge(array('status' => $status), $data);
@@ -32,16 +33,32 @@ class JSON_API_Response {
     
     if (function_exists('json_encode')) {
       // Use the built-in json_encode function if it's available
-      return json_encode($data);
+      if (version_compare(PHP_VERSION, '5.3') < 0) {
+        $json = json_encode($data);
+      } else {
+        $json_encode_options = 0;
+        if ($json_api->query->json_encode_options) {
+          $json_encode_options = $json_api->query->json_encode_options;
+        }
+        $json = json_encode($data, $json_encode_options);
+      }
     } else {
       // Use PEAR's Services_JSON encoder otherwise
       if (!class_exists('Services_JSON')) {
         $dir = json_api_dir();
         require_once "$dir/library/JSON.php";
       }
-      $json = new Services_JSON();
-      return $json->encode($data);
+      $json_service = new Services_JSON();
+      $json = $json_service->encode($data);
     }
+    
+    // Thanks to Stack Overflow user Gumbo stackoverflow.com/questions/2934563
+    if ($json_api->query->json_unescaped_unicode) {
+      $callback = array($this, 'replace_unicode_escape_sequence');
+      $json = preg_replace_callback('/\\\\u([0-9a-f]{4})/i', $callback, $json);
+    }
+    
+    return $json;
   }
   
   function is_value_included($key) {
@@ -177,6 +194,10 @@ class JSON_API_Response {
       $last = $char;
     }
     return $pretty;
+  }
+  
+  function replace_unicode_escape_sequence($match) {
+    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
   }
   
 }

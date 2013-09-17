@@ -21,6 +21,10 @@ class JSON_API {
     
     if ($controller) {
       
+      if (empty($this->query->dev)) {
+        error_reporting(0);
+      }
+      
       if (!in_array($controller, $active_controllers)) {
         $this->error("Unknown controller '$controller'.");
       }
@@ -43,6 +47,7 @@ class JSON_API {
         $this->response->setup();
         
         // Run action hooks for method
+        do_action("json_api", $controller, $method);
         do_action("json_api-{$controller}-$method");
         
         // Error out if nothing is found
@@ -171,7 +176,7 @@ class JSON_API {
                   echo '<a href="' . wp_nonce_url('options-general.php?page=json-api&amp;action=activate&amp;controller=' . $controller, 'update-options') . '" title="' . __('Activate this controller') . '" class="edit">' . __('Activate') . '</a>';
                 }
                   
-                if ($info['url']) {
+                if (!empty($info['url'])) {
                   echo ' | ';
                   echo '<a href="' . $info['url'] . '" target="_blank">Docs</a></div>';
                 }
@@ -184,7 +189,7 @@ class JSON_API {
                 <?php
                 
                 foreach($info['methods'] as $method) {
-                  $url = $this->get_method_url($controller, $method, array('dev' => 1));
+                  $url = $this->get_method_url($controller, $method);
                   if ($active) {
                     echo "<code><a href=\"$url\">$method</a></code> ";
                   } else {
@@ -275,14 +280,22 @@ class JSON_API {
   function get_controllers() {
     $controllers = array();
     $dir = json_api_dir();
-    $dh = opendir("$dir/controllers");
-    while ($file = readdir($dh)) {
-      if (preg_match('/(.+)\.php$/', $file, $matches)) {
-        $controllers[] = $matches[1];
-      }
-    }
+    $this->check_directory_for_controllers("$dir/controllers", $controllers);
+    $this->check_directory_for_controllers(get_stylesheet_directory(), $controllers);
     $controllers = apply_filters('json_api_controllers', $controllers);
     return array_map('strtolower', $controllers);
+  }
+  
+  function check_directory_for_controllers($dir, &$controllers) {
+    $dh = opendir($dir);
+    while ($file = readdir($dh)) {
+      if (preg_match('/(.+)\.php$/i', $file, $matches)) {
+        $src = file_get_contents("$dir/$file");
+        if (preg_match("/class\s+JSON_API_{$matches[1]}_Controller/i", $src)) {
+          $controllers[] = $matches[1];
+        }
+      }
+    }
   }
   
   function controller_is_active($controller) {
@@ -340,9 +353,19 @@ class JSON_API {
   }
   
   function controller_path($controller) {
-    $dir = json_api_dir();
+    $json_api_dir = json_api_dir();
+    $json_api_path = "$json_api_dir/controllers/$controller.php";
+    $theme_dir = get_stylesheet_directory();
+    $theme_path = "$theme_dir/$controller.php";
+    if (file_exists($theme_path)) {
+      $path = $theme_path;
+    } else if (file_exists($json_api_path)) {
+      $path = $json_api_path;
+    } else {
+      $path = null;
+    }
     $controller_class = $this->controller_class($controller);
-    return apply_filters("{$controller_class}_path", "$dir/controllers/$controller.php");
+    return apply_filters("{$controller_class}_path", $path);
   }
   
   function get_nonce_id($controller, $method) {

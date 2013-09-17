@@ -3,16 +3,17 @@
 class JSON_API_Introspector {
   
   public function get_posts($query = false, $wp_posts = false) {
-    global $post;
+    global $post, $wp_query;
     $this->set_posts_query($query);
     $output = array();
     while (have_posts()) {
       the_post();
       if ($wp_posts) {
-        $output[] = $post;
+        $new_post = $post;
       } else {
-        $output[] = new JSON_API_Post($post);
+        $new_post = new JSON_API_Post($post);
       }
+      $output[] = $new_post;
     }
     return $output;
   }
@@ -66,8 +67,8 @@ class JSON_API_Introspector {
     return $this->month_archives["$year$month"];
   }
   
-  public function get_categories() {
-    $wp_categories = get_categories();
+  public function get_categories($args = null) {
+    $wp_categories = get_categories($args);
     $categories = array();
     foreach ($wp_categories as $wp_category) {
       if ($wp_category->term_id == 1 && $wp_category->slug == 'uncategorized') {
@@ -76,6 +77,33 @@ class JSON_API_Introspector {
       $categories[] = $this->get_category_object($wp_category);
     }
     return $categories;
+  }
+  
+  public function get_current_post() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'slug', 'post_id', 'post_slug')));
+    if ($id || $post_id) {
+      if (!$id) {
+        $id = $post_id;
+      }
+      $posts = $this->get_posts(array(
+        'p' => $id
+      ), true);
+    } else if ($slug || $post_slug) {
+      if (!$slug) {
+        $slug = $post_slug;
+      }
+      $posts = $this->get_posts(array(
+        'name' => $slug
+      ), true);
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+    }
+    if (!empty($posts)) {
+      return $posts[0];
+    } else {
+      return null;
+    }
   }
   
   public function get_current_category() {
@@ -143,14 +171,14 @@ class JSON_API_Introspector {
   
   public function get_authors() {
     global $wpdb;
-    $author_ids = $wpdb->get_col($wpdb->prepare("
+    $author_ids = $wpdb->get_col("
       SELECT u.ID, m.meta_value AS last_name
       FROM $wpdb->users AS u,
            $wpdb->usermeta AS m
       WHERE m.user_id = u.ID
         AND m.meta_key = 'last_name'
       ORDER BY last_name
-    "));
+    ");
     $all_authors = array_map(array(&$this, 'get_author_by_id'), $author_ids);
     $active_authors = array_filter($all_authors, array(&$this, 'is_active_author'));
     return $active_authors;
@@ -215,7 +243,8 @@ class JSON_API_Introspector {
       'post_type' => 'attachment',
       'post_parent' => $post_id,
       'orderby' => 'menu_order',
-      'order' => 'ASC'
+      'order' => 'ASC',
+      'suppress_filters' => false
     ));
     $attachments = array();
     if (!empty($wp_attachments)) {
@@ -226,16 +255,32 @@ class JSON_API_Introspector {
     return $attachments;
   }
   
+  public function get_attachment($attachment_id) {
+    global $wpdb;
+    $wp_attachment = $wpdb->get_row(
+      $wpdb->prepare("
+        SELECT *
+        FROM $wpdb->posts
+        WHERE ID = %d
+      ", $attachment_id)
+    );
+    return new JSON_API_Attachment($wp_attachment);
+  }
+  
   public function attach_child_posts(&$post) {
     $post->children = array();
     $wp_children = get_posts(array(
       'post_type' => $post->type,
       'post_parent' => $post->id,
       'order' => 'ASC',
-      'orderby' => 'menu_order'
+      'orderby' => 'menu_order',
+      'numberposts' => -1,
+      'suppress_filters' => false
     ));
     foreach ($wp_children as $wp_post) {
-      $post->children[] = new JSON_API_Post($wp_post);
+      $new_post = new JSON_API_Post($wp_post);
+      $new_post->parent = $post->id;
+      $post->children[] = $new_post;
     }
     foreach ($post->children as $child) {
       $this->attach_child_posts($child);
@@ -291,6 +336,7 @@ class JSON_API_Introspector {
     
     if (!empty($query)) {
       query_posts($query);
+      do_action('json_api_query', $wp_query);
     }
   }
   

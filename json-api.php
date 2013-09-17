@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: JSON API
-Plugin URI: http://wordpress.org/extend/plugins/json-api/
+Plugin URI: http://wordpress.org/plugins/json-api/
 Description: A RESTful API for WordPress
-Version: 1.0.7
+Version: 1.1.1
 Author: Dan Phiffer
 Author URI: http://phiffer.org/
 */
