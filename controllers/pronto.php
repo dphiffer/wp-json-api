@@ -58,6 +58,22 @@ class JSON_API_Pronto_Controller {
     );
   }
 
+    public function get_be_tracking_count() {
+    global $json_api;
+    global $wpdb;
+    global $blog_id;
+
+    extract($_REQUEST);
+
+    $sql = "select count(*) from feed_fetcher_pulled_post where blog_id={$blog_id}";
+    $pulled_post_count = $wpdb->get_var($sql);
+    return array(
+      "message" => "blog engine count",
+      "blog_id" => $blog_id,
+      "be_link_count" => $pulled_post_count
+    );
+  }
+
   private function _verify_nonce($method) {
     global $json_api;
 
@@ -84,22 +100,6 @@ class JSON_API_Pronto_Controller {
       else
         $json_api->error(__("You must either provide the 'u' and 'p' parameters or login as an administrator."));
     }
-  }
-
-  public function get_be_tracking_count() {
-    global $json_api;
-    global $wpdb;
-    global $blog_id;
-
-    extract($_REQUEST);
-
-    $sql = "select count(*) from feed_fetcher_pulled_post where blog_id={$blog_id}";
-    $pulled_post_count = $wpdb->get_var($sql);
-    return array(
-      "message" => "blog engine count",
-      "blog_id" => $blog_id,
-      "be_link_count" => $pulled_post_count
-    );
   }
 }
 
