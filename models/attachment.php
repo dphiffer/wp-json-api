@@ -36,17 +36,13 @@ class JSON_API_Attachment {
   }
   
   function query_images() {
-    $sizes = array('thumbnail', 'medium', 'large', 'full');
-    if (function_exists('get_intermediate_image_sizes')) {
-      $sizes = array_merge(array('full'), get_intermediate_image_sizes());
-    }
-    $this->images = array();
-    foreach ($sizes as $size) {
-      list($url, $width, $height) = wp_get_attachment_image_src($this->id, $size);
-      $this->images[$size] = (object) array(
-        'url' => $url,
-        'width' => $width,
-        'height' => $height
+    $metadata = wp_get_attachment_metadata($this->id);
+    $img_base_url = str_replace(wp_basename($this->url), "", $this->url);
+    foreach($metadata['sizes'] as $key => $value) {
+      $this->images[$key] = (object) array(
+        'url' => $img_base_url.$value['file'],
+        'width' => $value['width'],
+        'height' => $value['height']
       );
     }
   }
