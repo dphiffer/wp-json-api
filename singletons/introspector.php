@@ -16,6 +16,13 @@ class JSON_API_Introspector {
     }
     return $output;
   }
+
+  public function wrap_posts(array $posts) {
+    foreach($posts as $id => &$post) {
+      $post = new JSON_API_Post($post);
+    }
+    return $posts;
+  }
   
   public function get_date_archive_permalinks() {
     $archives = wp_get_archives('echo=0');

@@ -35,6 +35,239 @@ class JSON_API_Core_Controller {
       );
     }
   }
+
+  public function get_parents() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'slug', 'page_id', 'page_slug', 'children')));
+    // Parent
+    if ($id || $page_id) {
+      if (!$id) {
+        $id = $page_id;
+      }
+      $self = get_page($id);
+      $parentId = $self->post_parent;
+    } else if ($slug || $page_slug) {
+      if (!$slug) {
+        $slug = $page_slug;
+      }
+      $self = $json_api->introspector->get_posts(array(
+        'pagename' => $slug
+      ));
+      if(count($self) == 0) {
+        $json_api->error("Parent not found");
+      }
+      $parentId = $self[0]->parent;
+      wp_reset_query();
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+    }
+
+    $parent = get_page($parentId);
+    $sibs = get_pages(array(
+      'sort_column' => 'menu_order',
+      'sort_order' => 'ASC',
+      'child_of' => $parent->post_parent,
+      'parent' => $parent->post_parent,
+    ));
+
+    if (count($sibs) >= 1) {
+      return $this->posts_result($json_api->introspector->wrap_posts($sibs));
+    } else {
+      $json_api->error("Children not found.");
+    }
+  }
+
+  /**
+   * Gets sibblings of a post
+   */
+  public function get_siblings() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'slug', 'page_id', 'page_slug', 'children')));
+    if ($id || $page_id) {
+      if (!$id) {
+        $id = $page_id;
+      }
+      $child = get_page($id);
+    } else if ($slug || $page_slug) {
+      if (!$slug) {
+        $slug = $page_slug;
+      }
+      $child = $json_api->introspector->get_posts(array(
+        'pagename' => $slug
+      ));
+      wp_reset_query();
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+    }
+
+    if(count($child) >= 1) {
+      $id = isset($child->post_parent) ? $child->post_parent : $child[0]->parent;
+      $children = get_pages(array(
+        'sort_column' => 'menu_order',
+        'sort_order' => 'ASC',
+        'child_of' => $id,
+        'parent' => $id,
+      ));
+      // Immediate children only
+      foreach($children as $key => &$child) {
+        if($child->post_parent != $id) {
+          unset($children[$key]);
+        } else {
+          $child->url = get_page_link($child->ID);
+        }
+      }
+      usort($children, function($el1, $el2) {
+        return strnatcmp($el1->menu_order, $el2->menu_order);
+      });
+    } else {
+      $json_api->error("Parent not found.");
+      return;
+    }
+    if (count($children) >= 1) {
+      return $this->posts_result($json_api->introspector->wrap_posts($children));
+    } else {
+      $json_api->error("Children not found.");
+    }
+  }
+
+  /**
+   * Gets immediate children of a post
+   */
+  public function get_children() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'slug', 'post_id', 'post_slug')));
+
+    // Find parent based on slug
+    if($slug || $post_slug) {
+      if (!$slug) {
+        $slug = $post_slug; // parent id
+      }
+      $parent = $json_api->introspector->get_posts(array(
+        'pagename' => $slug
+      ));
+      if(count($parent) == 1) {
+        $id = $post_id = $parent[0]->id;
+      } else {
+        $json_api->error("Slug not found.");
+        return;
+      }
+    }
+
+    // Find child
+    if($id || $post_id) {
+      if (!$id) {
+        $id = $post_id; // parent id
+      }
+      $children = get_pages(array(
+        'sort_column' => 'menu_order',
+        'sort_order' => 'ASC',
+        'child_of' => $id,
+        'parent' => $id,
+      ));
+      // Immediate children only
+      foreach($children as $key => &$child) {
+        if($child->post_parent != $id) {
+          unset($children[$key]);
+        } else {
+          $child->url = get_page_link($child->ID);
+        }
+      }
+      usort($children, function($el1, $el2) {
+        return strnatcmp($el1->menu_order, $el2->menu_order);
+      });
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+      return;
+    }
+    if (count($children) >= 1) {
+      return $this->posts_result($json_api->introspector->wrap_posts($children));
+    } else {
+      $json_api->error("Not found.");
+    }
+  }
+
+  /**
+   * Published draft
+   */
+  public function get_published_draft() {
+    global $json_api, $wp_the_query;
+    extract($json_api->query->get(array('id', 'slug', 'post_id', 'post_slug')));
+
+    // Find parent based on slug
+    if($slug || $post_slug) {
+      if (!$slug) {
+        $slug = $post_slug; // parent id
+      }
+      $posts = $json_api->introspector->get_posts(array(
+        'pagename' => $slug
+      ));
+      if(count($posts) == 1) {
+        $id = $post_id = $posts[0]->id;
+      } else {
+        $json_api->error("Slug not found.");
+        return;
+      }
+    }
+
+    // Find child
+    if($id || $post_id) {
+      if (!$id) {
+        $id = $post_id; // parent id
+      }
+      $post = get_posts(array(
+        'post_type' => 'revision',
+        'post_parent' => $id,
+        'post_status' => array('inherit', 'draft', 'auto-draft'),
+      ));
+    } else {
+      $json_api->error("Include 'id' or 'slug' var in your request.");
+      return;
+    }
+    if (count($post) >= 1) {
+      $post = array_slice($post, 0, 1);
+      return $this->posts_result($json_api->introspector->wrap_posts($post));
+    } else {
+      $json_api->error("Not found.");
+    }
+  }
+
+  /**
+   * Get a non-published draft
+   */
+  public function get_draft() {
+    global $json_api;
+    extract($json_api->query->get(array('id', 'post_id')));
+    if($id || $post_id) {
+      if (!$id) {
+        $id = $post_id; // parent id
+      }
+      $posts = $json_api->introspector->get_posts(array(
+        'post_status' => 'draft',
+        'post_type' => array('page', 'post'),
+        'p' => $id,
+      ));
+    } else {
+      $json_api->error("Include 'id' var in your request.");
+    }
+    if (count($posts) == 1) {
+      return $this->posts_result($posts);
+    } else {
+      $json_api->error("Not found.");
+    }
+  }
+
+  public function get_recent_drafts() {
+    global $json_api;
+    $posts = $json_api->introspector->get_posts(array(
+      'post_status' => 'draft',
+      'post_type' => array('page', 'post'),
+    ));
+    if (count($posts) == 1) {
+      return $this->posts_result($posts);
+    } else {
+      $json_api->error("Not found.");
+    }
+  }
   
   public function get_recent_posts() {
     global $json_api;
