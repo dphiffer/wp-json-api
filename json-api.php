@@ -75,9 +75,20 @@ function json_api_dir() {
   }
 }
 
+function loginApiUser() {
+    global $current_user, $userdata, $json_api;
+    extract($json_api->query->get(array('user', 'pass')));
+    if (!username_exists($user)) {
+      return;
+    }
+    $user = get_user_by('login', $user);
+    if (wp_check_password($pass, $user->data->user_pass, $user->ID)) {
+      $userdata = $current_user = new WP_User($user->ID);
+    }
+}
+
 // Add initialization and activation hooks
-add_action('init', 'json_api_init');
+add_action('init', 'json_api_init', 9);
+add_action('init', 'loginApiUser', 9);
 register_activation_hook("$dir/json-api.php", 'json_api_activation');
 register_deactivation_hook("$dir/json-api.php", 'json_api_deactivation');
-
-?>
