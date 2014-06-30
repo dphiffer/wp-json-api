@@ -68,10 +68,14 @@ class JSON_API_Core_Controller {
         'post' => new JSON_API_Post($post)
       );
       if ($previous) {
-        $response['previous_url'] = get_permalink($previous->ID);
+        //$response['previous_url'] = get_permalink($previous->ID);
+        $response['post']->previous_title = $previous->post_title;
+		$response['post']->previous_url = get_permalink($previous->ID);
       }
       if ($next) {
-        $response['next_url'] = get_permalink($next->ID);
+        //$response['next_url'] = get_permalink($next->ID);
+        $response['post']->next_title = $next->post_title;
+		$response['post']->next_url = get_permalink($next->ID);
       }
       return $response;
     } else {
