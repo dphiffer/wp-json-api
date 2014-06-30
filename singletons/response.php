@@ -17,6 +17,20 @@ class JSON_API_Response {
     
     // Compatibility with Disqus plugin
     remove_action('loop_end', 'dsq_loop_end');
+    remove_filter('the_content', 'disp_social', 1);
+    remove_filter('the_content', 'sharing_display', 19);
+	remove_filter('the_excerpt', 'disp_social');
+	remove_filter('comment_text', 'youtube_link', 1);
+	
+	global $jQueryLazyLoad;
+    remove_action('wp_head', array($jQueryLazyLoad, 'action_header'));
+	remove_action('wp_enqueue_scripts', array($jQueryLazyLoad, 'action_enqueue_scripts'));
+	remove_filter('the_content', array($jQueryLazyLoad, 'filter_the_content'));
+	remove_filter('wp_get_attachment_link', array($jQueryLazyLoad, 'filter_the_content'));
+	remove_action('wp_footer', array($jQueryLazyLoad, 'action_footer'));
+	
+	global $yarpp;
+	remove_filter('the_content', array($yarpp, 'the_content'), 1200);
   }
   
   function get_json($data, $status = 'ok') {
