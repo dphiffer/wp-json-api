@@ -20,6 +20,7 @@ class JSON_API_Response {
     remove_filter('the_content', 'disp_social', 1);
     remove_filter('the_content', 'sharing_display', 19);
 	remove_filter('the_excerpt', 'disp_social');
+	remove_filter('the_excerpt', 'sharing_display', 19);
 	remove_filter('comment_text', 'youtube_link', 1);
 	
 	global $jQueryLazyLoad;
