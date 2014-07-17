@@ -72,9 +72,11 @@ class JSON_API_Core_Controller {
       );
       if ($previous) {
         $response['previous_url'] = get_permalink($previous->ID);
+        $response['previous_post_title'] = $previous->post_title;
       }
       if ($next) {
         $response['next_url'] = get_permalink($next->ID);
+        $response['next_post_title'] = $next->post_title;
       }
       return $response;
     } else {
