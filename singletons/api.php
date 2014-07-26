@@ -50,8 +50,39 @@ class JSON_API {
           $this->error('Not found');
         }
         
-        // Run the method
-        $result = $this->controller->$method();
+        // Build transient slug using method (and query params if set)
+        $transient_slug = 'json-api-';
+        $transient_slug .= $method;
+
+        $url = parse_url($_SERVER['REQUEST_URI']);
+
+        if($url['query'] !== null):
+          $args = wp_parse_args($url['query']);
+          $transient_slug .= '-' . implode('-', array_keys($args));
+          $transient_slug .= '-' . implode('-', $args);
+        endif;
+
+        // Transient slug must be less than 45 characters (http://codex.wordpress.org/Transients_API)
+        if(strlen($transient_slug) > 40):
+          $transient_slug = 'json-api-' . md5($transient_slug);
+        endif;
+
+        if ( is_user_logged_in() ):
+          // Never show cached content to a logged-in user
+          $cached = false;
+        else:
+          // Check for cached value
+          $cached = get_transient($transient_slug);
+        endif;
+
+        if($cached !== false):
+          // Use the cached result
+          $result = $cached;
+        else:
+          // Run the method and cache result for 24 hours
+          $result = $this->controller->$method();
+          set_transient( $transient_slug, $result, 24 * 3600 );
+        endif;
         
         // Handle the result
         $this->response->respond($result);
