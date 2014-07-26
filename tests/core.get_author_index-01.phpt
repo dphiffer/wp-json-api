@@ -7,8 +7,15 @@ require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
 $http->get('http://wordpress.test/?json=core.get_author_index');
 $response = $http->currentResponse();
-echo $response['body'];
+$response = json_decode($response['body']);
+$author = $response->authors[0];
+
+echo "Response status: $response->status\n";
+echo "Author count: $response->count\n";
+echo "Author name: $author->name\n";
 
 ?>
 --EXPECT--
-{"status":"ok","count":2,"authors":[{"id":3,"slug":"chip-bennett","name":"Chip Bennett","first_name":"","last_name":"","nickname":"Chip Bennett","url":"","description":""},{"id":4,"slug":"ian-stewart","name":"Ian Stewart","first_name":"","last_name":"","nickname":"Ian Stewart","url":"","description":""}]}
+Response status: ok
+Author count: 1
+Author name: themedemos
