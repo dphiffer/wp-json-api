@@ -5,7 +5,7 @@ core.get_author_index with user-friendly URLs
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/api/core/get_author_index');
+$http->get('http://wordpress.test/api/core/get_author_index?dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $author = $response->authors[0];

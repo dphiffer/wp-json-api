@@ -5,7 +5,7 @@ core.info default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.info');
+$http->get('http://wordpress.test/?json=core.info&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 

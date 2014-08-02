@@ -5,7 +5,7 @@ core.get_page default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_page&slug=about');
+$http->get('http://wordpress.test/?json=core.get_page&slug=about&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 

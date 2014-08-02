@@ -5,7 +5,7 @@ core.get_search_posts default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_date_index');
+$http->get('http://wordpress.test/?json=core.get_date_index&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $count = count($response->permalinks);

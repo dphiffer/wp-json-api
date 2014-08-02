@@ -282,15 +282,21 @@ class JSON_API_Post {
       'object_type' => array($type),
       'public'   => true,
       '_builtin' => false
-    ));
-    foreach ($taxonomies as $taxonomy) {
-      if ($json_api->include_value($taxonomy)) {
-        $terms = get_the_terms($this->id, $taxonomy);
-        if (!empty($terms)) {
-          $this->$taxonomy = array_values($terms);
-        } else {
-          $this->$taxonomy = array();
+    ), 'objects');
+    foreach ($taxonomies as $taxonomy_id => $taxonomy) {
+      $taxonomy_key = "taxonomy_$taxonomy_id";
+      if (!$json_api->include_value($taxonomy_key)) {
+        continue;
+      }
+      $taxonomy_class = $taxonomy->hierarchical ? 'JSON_API_Category' : 'JSON_API_Tag';
+      $terms = get_the_terms($this->id, $taxonomy_id);
+      $this->$taxonomy_key = array();
+      if (!empty($terms)) {
+        $taxonomy_terms = array();
+        foreach ($terms as $term) {
+          $taxonomy_terms[] = new $taxonomy_class($term);
         }
+        $this->$taxonomy_key = $taxonomy_terms;
       }
     }
   }

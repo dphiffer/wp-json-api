@@ -5,7 +5,7 @@ core.get_category_posts default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_category_posts&slug=markup');
+$http->get('http://wordpress.test/?json=core.get_category_posts&slug=markup&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $post = $response->posts[0];
