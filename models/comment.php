@@ -9,6 +9,7 @@ class JSON_API_Comment {
   var $content; // String
   var $parent;  // Integer
   var $author;  // Object (only if the user was registered & logged in)
+  var $avatar;	//String;
   
   function JSON_API_Comment($wp_comment = null) {
     if ($wp_comment) {
@@ -26,9 +27,10 @@ class JSON_API_Comment {
     $this->name = $wp_comment->comment_author;
     $this->url = $wp_comment->comment_author_url;
     $this->date = date($date_format, strtotime($wp_comment->comment_date));
-    $this->content = $content;
+    $this->content = trim($content);
     $this->parent = (int) $wp_comment->comment_parent;
     //$this->raw = $wp_comment;
+    $this->avatar = $this->get_avatar_url( $wp_comment->comment_author_email, 80);
     
     if (!empty($wp_comment->user_id)) {
       $this->author = new JSON_API_Author($wp_comment->user_id);
@@ -50,6 +52,7 @@ class JSON_API_Comment {
     $_POST['url'] = empty($_REQUEST['url']) ? '' : $_REQUEST['url'];
     $_POST['comment'] = $_REQUEST['content'];
     $_POST['parent'] = $_REQUEST['parent'];
+    $_POST['comment_parent'] = $_REQUEST['parent'];
     include ABSPATH . 'wp-comments-post.php';
   }
   
@@ -75,6 +78,69 @@ class JSON_API_Comment {
     $json_api->response->respond($new_comment, $status);
   }
   
+  function get_avatar_url($id_or_email, $size = 96, $default = 'mystery')
+  {
+  	if ( !is_numeric($size) )
+  		$size = '96';
+  	
+  	$email = '';
+  	if ( is_numeric($id_or_email) ) {
+  		$id = (int) $id_or_email;
+  		$user = get_userdata($id);
+  		if ( $user )
+  			$email = $user->user_email;
+  	} elseif ( is_object($id_or_email) ) {
+  		// No avatar for pingbacks or trackbacks
+  		$allowed_comment_types = apply_filters( 'get_avatar_comment_types', array( 'comment' ) );
+  		if ( ! empty( $id_or_email->comment_type ) && ! in_array( $id_or_email->comment_type, (array) $allowed_comment_types ) )
+  			return false;
+  	
+  		if ( !empty($id_or_email->user_id) ) {
+  			$id = (int) $id_or_email->user_id;
+  			$user = get_userdata($id);
+  			if ( $user)
+  				$email = $user->user_email;
+  		} elseif ( !empty($id_or_email->comment_author_email) ) {
+  			$email = $id_or_email->comment_author_email;
+  		}
+  	} else {
+  		$email = $id_or_email;
+  	}
+  	
+  	if ( empty($default) ) {
+  		$avatar_default = get_option('avatar_default');
+  		if ( empty($avatar_default) )
+  			$default = 'mystery';
+  		else
+  			$default = $avatar_default;
+  	}
+  	
+  	if ( !empty($email) )
+  		$email_hash = md5( strtolower( $email ) );
+  	
+  	if ( is_ssl() ) {
+  		$host = 'https://secure.gravatar.com';
+  	} else {
+  		if ( !empty($email) )
+  			$host = sprintf( "http://%d.gravatar.com", ( hexdec( $email_hash[0] ) % 2 ) );
+  		else
+  			$host = 'http://0.gravatar.com';
+  	}
+  	  	
+  	if ( !empty($email) ) {
+  		$out = "$host/avatar/";
+  		$out .= $email_hash;
+  		$out .= '?s='.$size;
+  		$out .= '&d=mm';
+  	
+  		$rating = get_option('avatar_rating');
+  		if ( !empty( $rating ) )
+  			$out .= "&amp;r={$rating}";
+  		
+  	}
+  	
+  	return $out;
+  }
 }
 
 ?>
