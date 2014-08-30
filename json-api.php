@@ -1,12 +1,14 @@
 <?php
 /*
-Plugin Name: JSON API
-Plugin URI: http://wordpress.org/plugins/json-api/
-Description: A RESTful API for WordPress
-Version: 1.1.1
-Author: Dan Phiffer
-Author URI: http://phiffer.org/
+Plugin Name: JSON API for apfelcheck.de
+Description: Extension for JSON API 1.1.1 by Dan Phiffer
+Version: 1.1.2
 */
+
+// Description: A RESTful API for WordPress
+// Version: 1.1.0
+// Author: Dan Phiffer
+// Author URI: http://phiffer.org/
 
 $dir = json_api_dir();
 @include_once "$dir/singletons/api.php";

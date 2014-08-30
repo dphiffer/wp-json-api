@@ -12,7 +12,7 @@ class JSON_API_Post {
   var $status;          // String ("draft", "published", or "pending")
   var $title;           // String
   var $title_plain;     // String
-  var $content;         // String (modified by read_more query var)
+  var $post_content;         // String (modified by read_more query var)
   var $excerpt;         // String
   var $date;            // String (modified by date_format query var)
   var $modified;        // String (modified by date_format query var)
@@ -165,10 +165,10 @@ class JSON_API_Post {
   function set_content_value() {
     global $json_api;
     if ($json_api->include_value('content')) {
-      $content = get_the_content($json_api->query->read_more);
-      $content = apply_filters('the_content', $content);
-      $content = str_replace(']]>', ']]&gt;', $content);
-      $this->content = $content;
+      $post_content = get_the_content($json_api->query->read_more);
+      $post_content = apply_filters('the_content', $post_content);
+      $post_content = str_replace(']]>', ']]&gt;', $post_content);
+      $this->content = $post_content;
     } else {
       unset($this->content);
     }

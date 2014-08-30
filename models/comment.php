@@ -49,7 +49,9 @@ class JSON_API_Comment {
     $_POST['email'] = $_REQUEST['email'];
     $_POST['url'] = empty($_REQUEST['url']) ? '' : $_REQUEST['url'];
     $_POST['comment'] = $_REQUEST['content'];
-    $_POST['parent'] = $_REQUEST['parent'];
+    $_POST['comment_parent'] = $_REQUEST['parent'];
+    $_POST['wpwall_comment'] = true;
+    
     include ABSPATH . 'wp-comments-post.php';
   }
   
