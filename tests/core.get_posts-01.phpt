@@ -1,11 +1,11 @@
 --TEST--
-core.get_date_posts by year
+core.get_posts default
 --FILE--
 <?php
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.get_date_posts&date=2012&dev=1');
+$http->get('http://wordpress.test/?json=core.get_posts&dev=1');
 $response = $http->currentResponse();
 $response = json_decode($response['body']);
 $post = $response->posts[0];
@@ -18,4 +18,4 @@ echo "Post title: $post->title\n";
 --EXPECT--
 Response status: ok
 Post count: 10
-Post title: Template: Featured Image (Vertical)
+Post title: Markup: HTML Tags and Formatting

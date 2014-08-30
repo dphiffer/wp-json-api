@@ -5,10 +5,25 @@ core.info default
 
 require_once 'HTTP/Client.php';
 $http = new HTTP_Client();
-$http->get('http://wordpress.test/?json=core.info');
+$http->get('http://wordpress.test/?json=core.info&dev=1');
 $response = $http->currentResponse();
-echo $response['body'];
+$response = json_decode($response['body']);
+
+echo "Response status: $response->status\n";
+echo "Controllers:\n";
+var_dump($response->controllers);
 
 ?>
 --EXPECT--
-{"status":"ok","json_api_version":"1.0.7","controllers":["core","posts","respond"]}
+Response status: ok
+Controllers:
+array(4) {
+  [0]=>
+  string(4) "core"
+  [1]=>
+  string(5) "posts"
+  [2]=>
+  string(7) "respond"
+  [3]=>
+  string(7) "widgets"
+}
