@@ -168,7 +168,7 @@ class JSON_API_Query {
         return 'get_search_results';
       } else if (is_home()) {
         if (empty($_GET['json'])) {
-          $json_api->error("Uknown method '$method'.");
+          $json_api->error("Unknown method '$method'.");
         }
         return 'get_recent_posts';
       } else if (is_page()) {
