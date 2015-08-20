@@ -379,10 +379,10 @@ class JSON_API {
     $wp_rewrite->flush_rules();
   }
   
-  function error($message = 'Unknown error', $status = 'error') {
+  function error($message = 'Unknown error', $http_status = 404) {
     $this->response->respond(array(
       'error' => $message
-    ), $status);
+    ), 'error', $http_status);
   }
   
   function include_value($key) {

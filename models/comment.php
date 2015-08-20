@@ -60,12 +60,12 @@ class JSON_API_Comment {
   
   function comment_closed() {
     global $json_api;
-    $json_api->error("Post is closed for comments.");
+    $json_api->error("Post is closed for comments.", 403);
   }
   
   function comment_on_draft() {
     global $json_api;
-    $json_api->error("You cannot comment on unpublished posts.");
+    $json_api->error("You cannot comment on unpublished posts.", 403);
   }
   
   function comment_post_redirect() {
