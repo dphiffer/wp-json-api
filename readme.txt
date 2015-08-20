@@ -3,8 +3,8 @@ Contributors: dphiffer
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DH4MEG99JR2WE
 Tags: json, api, ajax, cms, admin, integration, moma
 Requires at least: 2.8
-Tested up to: 3.5.2
-Stable tag: 1.1.1
+Tested up to: 4.3
+Stable tag: 1.1.2
 
 A RESTful API for WordPress
 
@@ -1036,6 +1036,9 @@ You should see the test results print out culminating in a summary:
 
 == Changelog ==
 
+= 1.1.2 (2015-08-20): =
+* Don't always respond with HTTP 200
+
 = 1.1.1 (2013-06-23): =
 * Added support for custom taxonomies
 * Errors are now suppressed unless you include a non-empty `dev` argument
@@ -1167,6 +1170,9 @@ You should see the test results print out culminating in a summary:
 * Initial Public Release
 
 == Upgrade Notice ==
+
+= 1.1.2 =
+Don't always respond with HTTP 200
 
 = 1.1.1 =
 Added support for custom taxonomies
