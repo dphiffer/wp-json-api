@@ -334,8 +334,8 @@ class JSON_API_Introspector {
       $query['post_type'] = $json_api->query->post_type;
     }
     
+    $query = apply_filters('json_api_query_args', $query);
     if (!empty($query)) {
-      $query = apply_filters('json_api_query_args', $query);
       query_posts($query);
       do_action('json_api_query', $wp_query);
     }
