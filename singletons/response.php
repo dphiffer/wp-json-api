@@ -102,7 +102,7 @@ class JSON_API_Response {
     exit;
   }
   
-  function output($result, $http_status) {
+  function output($result, $http_status = 200) {
     $charset = get_option('blog_charset');
     if (!headers_sent()) {
       status_header($http_status);
