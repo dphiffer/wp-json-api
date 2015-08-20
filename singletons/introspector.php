@@ -335,6 +335,7 @@ class JSON_API_Introspector {
     }
     
     if (!empty($query)) {
+      $query = apply_filters('json_api_query_args', $query);
       query_posts($query);
       do_action('json_api_query', $wp_query);
     }
