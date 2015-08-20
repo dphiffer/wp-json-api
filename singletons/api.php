@@ -6,7 +6,7 @@ class JSON_API {
     $this->query = new JSON_API_Query();
     $this->introspector = new JSON_API_Introspector();
     $this->response = new JSON_API_Response();
-    add_action('template_redirect', array(&$this, 'template_redirect'));
+    add_action('template_redirect', array(&$this, 'template_redirect'), 0);
     add_action('admin_menu', array(&$this, 'admin_menu'));
     add_action('update_option_json_api_base', array(&$this, 'flush_rewrite_rules'));
     add_action('pre_update_option_json_api_controllers', array(&$this, 'update_controllers'));
