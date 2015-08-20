@@ -106,7 +106,7 @@ class JSON_API_Query {
     }
     if (preg_match('/^[a-zA-Z_]+$/', $json)) {
       return $this->get_legacy_controller($json);
-    } else if (preg_match('/^([a-zA-Z_]+)(\/|\.)[a-zA-Z_]+$/', $json, $matches)) {
+    } else if (preg_match('/^([a-zA-Z0-9_]+)(\/|\.)[a-zA-Z0-9_]+$/', $json, $matches)) {
       return $matches[1];
     } else {
       return 'core';

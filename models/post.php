@@ -30,6 +30,7 @@ class JSON_API_Post {
     if (!empty($wp_post)) {
       $this->import_wp_object($wp_post);
     }
+    do_action("json_api_{$this->type}_constructor", $this);
   }
   
   function create($values = null) {
@@ -136,7 +137,7 @@ class JSON_API_Post {
     $this->set_value('title', get_the_title($this->id));
     $this->set_value('title_plain', strip_tags(@$this->title));
     $this->set_content_value();
-    $this->set_value('excerpt', get_the_excerpt());
+    $this->set_value('excerpt', apply_filters('the_excerpt', get_the_excerpt()));
     $this->set_value('date', get_the_time($date_format));
     $this->set_value('modified', date($date_format, strtotime($wp_post->post_modified)));
     $this->set_categories_value();
@@ -148,6 +149,8 @@ class JSON_API_Post {
     $this->set_value('comment_status', $wp_post->comment_status);
     $this->set_thumbnail_value();
     $this->set_custom_fields_value();
+    $this->set_custom_taxonomies($wp_post->post_type);
+    do_action("json_api_import_wp_post", $this, $wp_post);
   }
   
   function set_value($key, $value) {
@@ -244,24 +247,57 @@ class JSON_API_Post {
       return;
     }
     $thumbnail_size = $this->get_thumbnail_size();
-    list($thumbnail) = wp_get_attachment_image_src($attachment_id, $thumbnail_size);
-    $this->thumbnail = $thumbnail;
+    $this->thumbnail_size = $thumbnail_size;
+    $attachment = $json_api->introspector->get_attachment($attachment_id);
+    $image = $attachment->images[$thumbnail_size];
+    $this->thumbnail = $image->url;
+    $this->thumbnail_images = $attachment->images;
   }
   
   function set_custom_fields_value() {
     global $json_api;
-    if ($json_api->include_value('custom_fields') &&
-        $json_api->query->custom_fields) {
-      $keys = explode(',', $json_api->query->custom_fields);
+    if ($json_api->include_value('custom_fields')) {
       $wp_custom_fields = get_post_custom($this->id);
       $this->custom_fields = new stdClass();
-      foreach ($keys as $key) {
-        if (isset($wp_custom_fields[$key])) {
+      if ($json_api->query->custom_fields) {
+        $keys = explode(',', $json_api->query->custom_fields);
+      }
+      foreach ($wp_custom_fields as $key => $value) {
+        if ($json_api->query->custom_fields) {
+          if (in_array($key, $keys)) {
+            $this->custom_fields->$key = $wp_custom_fields[$key];
+          }
+        } else if (substr($key, 0, 1) != '_') {
           $this->custom_fields->$key = $wp_custom_fields[$key];
         }
       }
     } else {
       unset($this->custom_fields);
+    }
+  }
+  
+  function set_custom_taxonomies($type) {
+    global $json_api;
+    $taxonomies = get_taxonomies(array(
+      'object_type' => array($type),
+      'public'   => true,
+      '_builtin' => false
+    ), 'objects');
+    foreach ($taxonomies as $taxonomy_id => $taxonomy) {
+      $taxonomy_key = "taxonomy_$taxonomy_id";
+      if (!$json_api->include_value($taxonomy_key)) {
+        continue;
+      }
+      $taxonomy_class = $taxonomy->hierarchical ? 'JSON_API_Category' : 'JSON_API_Tag';
+      $terms = get_the_terms($this->id, $taxonomy_id);
+      $this->$taxonomy_key = array();
+      if (!empty($terms)) {
+        $taxonomy_terms = array();
+        foreach ($terms as $term) {
+          $taxonomy_terms[] = new $taxonomy_class($term);
+        }
+        $this->$taxonomy_key = $taxonomy_terms;
+      }
     }
   }
   
