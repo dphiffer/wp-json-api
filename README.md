@@ -898,6 +898,36 @@ Each JSON API method invokes an action when called.
       exit;
     }
 
+## Filter: json_api_http_status
+
+Provides an override for the response HTTP status. Offered for backwards compatibility, since version 1.1.1 and older *always* returned HTTP 200.
+
+### Example
+
+    // Retain old HTTP 200 statuses for legacy support
+    add_filter('json_api_http_status', 'my_http_status');
+    
+    function my_http_status() {
+      return 200;
+    }
+
+## Filter: json_api_query_args
+
+Provides an override for the [WP_Query](https://codex.wordpress.org/Class_Reference/WP_Query) arguments.
+
+### Example
+
+    // Allow queries of non-published content
+    add_action('json_api_query_args', 'my_query_args');
+    
+    function my_query_args($args) {
+      $args['post_status'] = array('draft', 'future', 'publish');
+    }
+
+## Action: json_api_query
+
+Called after the JSON API introspector runs `wp_query`, passes the `WP_Query` object as its single argument.
+
 ## 5.2. Developing JSON API controllers
 
 ### Creating a controller
