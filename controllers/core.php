@@ -27,7 +27,7 @@ class JSON_API_Core_Controller {
       } else {
         $version = '(Unknown)';
       }
-      $active_controllers = explode(',', get_option('json_api_controllers', 'core'));
+      $active_controllers = $json_api->get_active_controllers();
       $controllers = array_intersect($json_api->get_controllers(), $active_controllers);
       return array(
         'json_api_version' => $version,

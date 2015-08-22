@@ -16,7 +16,7 @@ class JSON_API {
     // Check to see if there's an appropriate API controller + method    
     $controller = strtolower($this->query->get_controller());
     $available_controllers = $this->get_controllers();
-    $enabled_controllers = explode(',', get_option('json_api_controllers', 'core'));
+    $enabled_controllers = $this->get_active_controllers();
     $active_controllers = array_intersect($available_controllers, $enabled_controllers);
     
     if ($controller) {
@@ -77,7 +77,7 @@ class JSON_API {
     }
     
     $available_controllers = $this->get_controllers();
-    $active_controllers = explode(',', get_option('json_api_controllers', 'core'));
+    $active_controllers = $this->get_active_controllers();
     
     if (count($active_controllers) == 1 && empty($active_controllers[0])) {
       $active_controllers = array();
@@ -297,14 +297,18 @@ class JSON_API {
       }
     }
   }
-  
-  function controller_is_active($controller) {
+
+  function get_active_controllers() {
     if (defined('JSON_API_CONTROLLERS')) {
       $default = JSON_API_CONTROLLERS;
     } else {
       $default = 'core';
     }
-    $active_controllers = explode(',', get_option('json_api_controllers', $default));
+    return explode(',', get_option('json_api_controllers', $default));
+  }
+  
+  function controller_is_active($controller) {
+    $active_controllers = $this->get_active_controllers();
     return (in_array($controller, $active_controllers));
   }
   
