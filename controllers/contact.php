@@ -11,9 +11,11 @@ class JSON_API_Contact_Controller
     {
         global $json_api;
         nocache_headers();
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $message = $_POST['message'];
+        $postdata = file_get_contents("php://input");
+        $request = json_decode($postdata);
+        $email = $request->email;
+        $name = $request->name;
+        $message = $request->message;
         if (empty($name) || empty($email) || empty($message)) {
             $json_api->error("Please fill out all required form fields (name, email, message).");
         }
