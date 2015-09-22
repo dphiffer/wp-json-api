@@ -62,8 +62,8 @@ class JSON_API_Core_Controller {
     global $json_api, $post;
     $post = $json_api->introspector->get_current_post();
     if ($post) {
-      $previous = get_adjacent_post(false, '', true);
-      $next = get_adjacent_post(false, '', false);
+      $previous = get_adjacent_post(true, '', true);
+      $next = get_adjacent_post(true, '', false);
       $response = array(
         'post' => new JSON_API_Post($post)
       );
