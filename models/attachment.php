@@ -42,23 +42,20 @@ class JSON_API_Attachment {
     }
     $this->images = array();
     $home = get_bloginfo('url');
+    $upload_dir = wp_upload_dir();
+    $basedir = $upload_dir['basedir'];
+    $file = get_post_meta($this->id, '_wp_attached_file', true);
+    
     foreach ($sizes as $size) {
       list($url, $width, $height) = wp_get_attachment_image_src($this->id, $size);
-      $filename = ABSPATH . substr($url, strlen($home) + 1);
-      if (file_exists($filename)) {
-        list($measured_width, $measured_height) = getimagesize($filename);
-        if ($measured_width == $width &&
-            $measured_height == $height) {
-          $this->images[$size] = (object) array(
-            'url' => $url,
-            'width' => $width,
-            'height' => $height
-          );
-        }
-      }
+      $filename = $basedir . '/' . str_replace(basename($file), basename(parse_url($url, PHP_URL_PATH)), $file);
+      list($measured_width, $measured_height) = getimagesize($filename);
+      $this->images[$size] = (object) array(
+        'url' => $url,
+        'width' => $width,
+        'height' => $height
+      );
     }
   }
   
 }
-
-?>
