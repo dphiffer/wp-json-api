@@ -34,7 +34,7 @@ class JSON_API_Attachment {
   function is_image() {
     return (substr($this->mime_type, 0, 5) == 'image');
   }
-  
+
   function query_images() {
     $sizes = array('thumbnail', 'medium', 'large', 'full');
     if (function_exists('get_intermediate_image_sizes')) {
@@ -42,19 +42,39 @@ class JSON_API_Attachment {
     }
     $this->images = array();
     $home = get_bloginfo('url');
+    $hostOfHome = parse_url($home, PHP_URL_HOST);
     foreach ($sizes as $size) {
+
       list($url, $width, $height) = wp_get_attachment_image_src($this->id, $size);
-      $filename = ABSPATH . substr($url, strlen($home) + 1);
-      if (file_exists($filename)) {
-        list($measured_width, $measured_height) = getimagesize($filename);
-        if ($measured_width == $width &&
-            $measured_height == $height) {
-          $this->images[$size] = (object) array(
+
+      // changelog 2016-01-13 from @itinance https://github.com/itinance:
+      //
+      // if plugin "WP-Offload-S3" is installed, the attachments are stored at s3/cloudfront and not necessarily
+      // hosted on the server beeing available at ABSPATH. In this case, let us trust the result
+      // of wp_get_attachment_image_src() and renounce calls to file_exists() and getimagesize()
+
+      $hostOfAttachment = parse_url($url, PHP_URL_HOST);
+      if($hostOfAttachment === $hostOfHome) {
+        $filename = ABSPATH . substr($url, strlen($home) + 1);
+        if (file_exists($filename)) {
+          list($measured_width, $measured_height) = getimagesize($filename);
+          if ($measured_width == $width &&
+              $measured_height == $height) {
+            $this->images[$size] = (object) array(
+                'url' => $url,
+                'width' => $width,
+                'height' => $height
+            );
+          }
+        }
+      } else {
+
+        $this->images[$size] = (object) array(
             'url' => $url,
             'width' => $width,
             'height' => $height
-          );
-        }
+        );
+
       }
     }
   }
