@@ -26,7 +26,7 @@ class JSON_API_Post {
   var $thumbnail;       // String
   var $custom_fields;   // Object (included by using custom_fields query var)
   
-  function JSON_API_Post($wp_post = null) {
+  function __construct($wp_post = null) {
     if (!empty($wp_post)) {
       $this->import_wp_object($wp_post);
     }

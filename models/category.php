@@ -9,7 +9,7 @@ class JSON_API_Category {
   var $parent;      // Integer
   var $post_count;  // Integer
   
-  function JSON_API_Category($wp_category = null) {
+  function __construct($wp_category = null) {
     if ($wp_category) {
       $this->import_wp_object($wp_category);
     }
